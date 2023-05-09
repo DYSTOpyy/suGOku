@@ -14,7 +14,7 @@ def affichage():
                 string+="|"
         input1=input1[9:]
         string+="\n"
-        if i%3==2and i != 8:
+        if i%3==2 and i != 8:
                 string+=11*"-"+"\n"
     print(string)
 
