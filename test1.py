@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
+import subprocess
 INPUT1 = ".5.4283..7.....9....3....2.6....1.5.3..6.2..1.8.7....3.3....6....9.....5..1863.9."
 SIZE = 3
 SIZE2 = SIZE**2
@@ -79,3 +82,7 @@ def init():
 
 
 init()
+subprocess.run(["gcc","program.c","-o","main2"])
+subprocess.run(["main2.exe"])
+result = subprocess.run(["del","main2.exe"],shell=True)
+print(result.returncode)
