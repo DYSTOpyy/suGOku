@@ -2,11 +2,16 @@ import numpy as np
 from math import *
 from tqdm import tqdm
 
-TAILLE: int = 16
+TAILLE: int = 9
 
-def afficher_grille (grille, plan:int) :   
+def afficher_grille (grille:np.ndarray, plan:int) -> None:   
     """ afficher comme une grille un des plan de la matrice 
-    (0:sudoku, 123...:possibilités) """
+    (0:sudoku, 123...:possibilités).
+    
+    Arguments :
+    grille  : numpy.ndarray  -- la grille de jeu à afficher
+    plan    : int            -- le plan de la grille à afficher
+    """
     
     print("Affichage du plan n°",plan)
     # pour chaque ligne 
@@ -48,8 +53,12 @@ def afficher_grille (grille, plan:int) :
 
     print("Nombre d'indices total :", grille[0][TAILLE][TAILLE])
     
-def maj_compteurs (grille) :
-    """ met a jour les compteurs de nb de cases par ligne/colonne/carré """
+def maj_compteurs (grille:np.ndarray) -> None:
+    """ met a jour les compteurs de nb de cases par ligne/colonne/carré
+    
+    Arguments :
+    grille  : numpy.ndarray  -- la grille de jeu avec les compteurs
+    """
 
     for line in range (TAILLE) :
         for column in range (TAILLE) :
@@ -60,9 +69,16 @@ def maj_compteurs (grille) :
                 grille[0][TAILLE][TAILLE] += 1
                 grille[0][TAILLE+1][(line//int(sqrt(TAILLE)))*int(sqrt(TAILLE))+(column//int(sqrt(TAILLE)))] += 1       # maj des carrés
 
-def is_okay_case (grille, valeur:int, ligne:int, col:int) :
+def is_okay_case (grille:np.ndarray, valeur:int, ligne:int, col:int) -> bool :
     """ vérifie si une valeur est possible à un endroit ligne/col donné 
-    dans la grille de jeu """
+    dans la grille de jeu 
+    
+    Arguments :
+    grille  : numpy.ndarray -- la grille de jeu contenant la case à vérifier
+    valeur  : int           -- la valeur à tester
+    ligne   : int           -- la ligne sur laquelle est la case
+    col     : int           -- la colonne sur laquelle est la case
+    """
 
     for i in range (TAILLE) :
 
@@ -73,10 +89,14 @@ def is_okay_case (grille, valeur:int, ligne:int, col:int) :
         
     return True
 
-def is_okay_grille (grille) :
+def is_okay_grille (grille:np.ndarray) -> bool :
     """ prend n'importe quelle grille COMPLETE et renvoi si elle est valide 
     ou non selon les contraintes, sans distinction de case (déjà là ou 
-    rentrée manuellement) """
+    rentrée manuellement) 
+    
+    Arguments :
+    grille  : numpy.ndarray -- la grille de jeu à vérifier
+    """
 
     for line in range (TAILLE) :
         for column in range (TAILLE) :
@@ -88,9 +108,13 @@ def is_okay_grille (grille) :
     return True
 
 
-def remplir_possibilite (grille) :
+def remplir_possibilite (grille:np.ndarray) -> None :
     """ rempli toute la matrice 3D de sorte a avoir des 1 sur le plan X si X 
-    est possible d'être mis à cette case """
+    est possible d'être mis à cette case 
+    
+    Arguments :
+    grille  : numpy.ndarray -- la grille de jeu 3D à remplir
+    """
 
     for line in range (TAILLE) :
         for column in range (TAILLE) :
@@ -103,16 +127,22 @@ def remplir_possibilite (grille) :
 
                         grille[valeur][line][column] = 1
 
-def algo_backtracking (grille, ligne:int, col:int) :         
+def algo_backtracking (grille:np.ndarray, ligne:int, col:int) -> bool :         
     """ resout avec le backtracking mais sans afficher si solution unique 
-    ou pas """
+    ou pas 
+    
+    Arguments :
+    grille  : numpy.ndarray -- la grille de jeu à résoudre
+    ligne   : int           -- ligne de la case testée actuellement (pour la récursivité)
+    col     : int           -- colonne de la case testée actuellement (pour la récursivité)
+    """
 
     # condition d'arrêt : si on a parcouru toute la grille cad arrivé en case (TAILLE, TAILLE)
     if (ligne >= TAILLE 
         or col >= TAILLE) :
         return True
     
-    # si la case n'est pas vide on passe à la suivante
+    # ne vérifier que les cases qui ne sont pas pré-remplies
     elif (grille[0][ligne][col] != 0) :
 
         return algo_backtracking(grille, ligne+(col+1)//TAILLE, (col+1)%TAILLE)
@@ -132,8 +162,16 @@ def algo_backtracking (grille, ligne:int, col:int) :
         return False 
     
 def algo_backtracking_multiples (grille, ligne:int, col:int, bar) -> int :        
-    """ RENVOIE UNIQUEMENT LE NOMBRE DE SOLUTION & MODIFIE LA MATRICE D'ENTREE !! 
-    (elle deviendra la dernière solution trouvée si y en a plusieurs) """
+    """ cherche le nombre de solutions possible à un sudoku, TRES LONG
+    RENVOIE UNIQUEMENT LE NOMBRE DE SOLUTION & MODIFIE LA MATRICE D'ENTREE !! 
+    (elle deviendra la dernière solution trouvée si y en a plusieurs) 
+    
+    Arguments :
+    grille  : numpy.ndarray -- la grille de jeu à résoudre
+    ligne   : int           -- ligne de la case testée actuellement (pour la récursivité)
+    col     : int           -- colonne de la case testée actuellement (pour la récursivité)
+    bar                     -- pour la barre de chargement dans le terminal (A ENLEVER)
+    """
 
     # condition d'arrêt : si on a parcouru toute la grille cad arrivé en case (TAILLE, TAILLE)
     if (ligne >= TAILLE 
@@ -159,8 +197,13 @@ def algo_backtracking_multiples (grille, ligne:int, col:int, bar) -> int :
         grille[0][ligne][col] = 0
         return n 
 
-def backtracking (grille, printNbSolution: bool = False) :    
-    """ lance l'algo de résolution avec ou sans le nb de solutions """
+def backtracking (grille: np.ndarray, printNbSolution: bool = False) :    
+    """ lance l'algo de résolution avec ou sans le nb de solutions 
+    
+    Arguments :
+    grille          : numpy.ndarray -- la grille de jeu à résoudre
+    printNbSolution : bool          -- choix du mode (solutions multiples ou non)
+    """
 
     if printNbSolution :
         n = 3265920             # 9 factorielle * 9 
@@ -172,8 +215,12 @@ def backtracking (grille, printNbSolution: bool = False) :
     else :
         algo_backtracking(grille, 0, 0)
     
-def line_to_grille (input : str) :         
-    """ transformer une ligne de texte sudoku en grille """
+def line_to_grille (input : str) -> np.ndarray :         
+    """ transformer une ligne de texte sudoku en grille 
+
+    Arguments :
+    input   : str   -- la ligne de texte formatée à convertir
+    """
 
     grille = np.zeros((TAILLE+1, TAILLE+2, TAILLE+1), dtype=int)
     for i in range (len(input)) :
@@ -186,8 +233,12 @@ def line_to_grille (input : str) :
 
     return grille
 
-def grille_to_line (grille) -> str:        
-    """ transformer une grille en ligne de texte sudoku """
+def grille_to_line (grille:np.ndarray) -> str:        
+    """ transformer une grille en ligne de texte sudoku 
+    
+    Arguments :
+    grille  : numpy.ndarray -- la grille de jeu à convertir
+    """
 
     output = ""
     for line in range (TAILLE) :
@@ -202,7 +253,8 @@ def grille_to_line (grille) -> str:
     return output
         
 grille = np.zeros((TAILLE+1,TAILLE+2,TAILLE+1), dtype=int)
-"""grille[0] = [[0, 0, 0, 0, 0, 0, 0, 1, 0, 0,],
+print(type(grille))
+grille[0] = [[0, 0, 0, 0, 0, 0, 0, 1, 0, 0,],
              [0, 0, 0, 0, 4, 0, 0, 0, 0, 0,],
              [0, 3, 2, 1, 9, 0, 0, 8, 0, 0,],
              [0, 0, 5, 3, 0, 0, 9, 0, 4, 0,],
@@ -212,26 +264,7 @@ grille = np.zeros((TAILLE+1,TAILLE+2,TAILLE+1), dtype=int)
              [5, 0, 0, 0, 3, 0, 0, 2, 7, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]] """
-
-grille[0] = [[0, 15, 0, 1, 0, 2, 10, 14, 12, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 6, 3, 16, 12, 0, 8, 4, 14, 15, 1, 0, 2, 0, 0, 0, 0],
-[14, 0, 9, 7, 11, 3, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[4, 13, 2, 12, 0, 0, 0, 0, 6, 0, 0, 0, 0, 15, 0, 0, 0],
-[0, 0, 0, 0, 14, 1, 11, 7, 3, 5, 10, 0, 0, 8, 0, 12, 0],
-[3, 16, 0, 0, 2, 4, 0, 0, 0, 14, 7, 13, 0, 0, 5, 15, 0],
-[11, 0, 5, 0, 0, 0, 0, 0, 0, 9, 4, 0, 0, 6, 0, 0, 0],
-[0, 0, 0, 0, 13, 0, 16, 5, 15, 0, 0, 12, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 9, 0, 1, 12, 0, 8, 3, 10, 11, 0, 15, 0, 0],
-[2, 12, 0, 11, 0, 0, 14, 3, 5, 4, 0, 0, 0, 0, 9, 0, 0],
-[6, 3, 0, 4, 0, 0, 13, 0, 0, 11, 9, 1, 0, 12, 16, 2, 0],
-[0, 0, 10, 9, 0, 0, 0, 0, 0, 0, 12, 0, 8, 0, 6, 7, 0],
-[12, 8, 0, 0, 16, 0, 0, 10, 0, 13, 0, 0, 0, 5, 0, 0, 0],
-[5, 0, 0, 0, 3, 0, 4, 6, 0, 1, 15, 0, 0, 0, 0, 0, 0],
-[0, 9, 1, 6, 0, 14, 0, 11, 0, 0, 2, 0, 0, 0, 10, 8, 0],
-[0, 14, 0, 0, 0, 13, 9, 0, 4, 12, 11, 8, 0, 0, 2, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]]
 
 maj_compteurs(grille)
 #remplir_possibilite(grille) 
@@ -244,4 +277,3 @@ backtracking(grille, False)
 #grille_to_line(grille)
 
 #A = (np.random.rand(640, 480) * 255 * 255 * 255).astype(np.uint32)
-

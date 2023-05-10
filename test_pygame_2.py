@@ -7,6 +7,14 @@ fenetre = pygame.display.set_mode((450,500))        # mettre l'écran
 continuer = True
 nb_cases_cote = 9
 TAILLE = 9
+TAILLE_CASE = min(fenetre.get_size()) / nb_cases_cote # min renvoie la valeur minimale d'une liste, ici la dimension de la fenêtre
+
+def highlight (x,y) :
+    
+    x = x // TAILLE_CASE
+    y = y // TAILLE_CASE
+
+    pygame.draw.rect(fenetre, [255,0,0], [x*TAILLE_CASE, y*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE], 3) # dessin rectangle
 
 grille = np.zeros((TAILLE+1,TAILLE+2,TAILLE+1), dtype=int)
 grille[0] = [[0, 0, 0, 0, 0, 0, 0, 1, 0, 0,],
@@ -21,11 +29,10 @@ grille[0] = [[0, 0, 0, 0, 0, 0, 0, 1, 0, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]]
  
-taille_case = min(fenetre.get_size()) / nb_cases_cote # min renvoie la valeur minimale d'une liste, ici la dimension de la fenêtre
-print(taille_case)
+print(TAILLE_CASE)
  
-font = pygame.font.SysFont("",20)
- 
+font = pygame.font.SysFont("",35)
+flag = 0
 while continuer:
     fenetre.fill((255,255,255))
  
@@ -37,15 +44,25 @@ while continuer:
 
         #if event.type == MOUSEBUTTONDOWN:  # on click
             # récuperer les coords et selon elle, 
+        if event.type == MOUSEBUTTONDOWN:
+            selected_x, selected_y = pygame.mouse.get_pos()
+            flag = 1
  
     for x in range(TAILLE):  # ligne
         for y in range(TAILLE):  # colonne 
  
-            pygame.draw.rect(fenetre, [0]*3, [x*taille_case, y*taille_case, taille_case, taille_case], 1) # dessin rectangle 
-            pygame.draw.line(fenetre, [0,0,255], [taille_case*3-1, 0], [ taille_case*3-1, taille_case*TAILLE], 3)
+            pygame.draw.rect(fenetre, [0]*3, [x*TAILLE_CASE, y*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE], 1) # dessin rectangle 
             lettre = font.render("%d" % grille[0][x][y], True, [0]*3) # la valeur de la case du sudoku
             lettre_rect = lettre.get_rect() 
-            lettre_rect.center = [x*taille_case + 1/2*taille_case, y*taille_case + 1/2*taille_case] # mise du centre du rect au milieu de la case
+            lettre_rect.center = [x*TAILLE_CASE + 1/2*TAILLE_CASE, y*TAILLE_CASE + 1/2*TAILLE_CASE] # mise du centre du rect au milieu de la case
             fenetre.blit( lettre , lettre_rect ) # on blit le tout
+
+    pygame.draw.line(fenetre, [0,0,255], [TAILLE_CASE*3-1, 0], [ TAILLE_CASE*3-1, TAILLE_CASE*TAILLE], 3)
+    pygame.draw.line(fenetre, [0,0,255], [ TAILLE_CASE*TAILLE, TAILLE_CASE*3-1], [ 0 , TAILLE_CASE*3-1], 3)
+    pygame.draw.line(fenetre, [0,0,255], [TAILLE_CASE*6-1, 0], [ TAILLE_CASE*6-1, TAILLE_CASE*TAILLE], 3)
+    pygame.draw.line(fenetre, [0,0,255], [ TAILLE_CASE*TAILLE, TAILLE_CASE*6-1], [ 0 , TAILLE_CASE*6-1], 3)
+
+    if flag == 1:
+        highlight(selected_x, selected_y)
  
     pygame.display.flip()
