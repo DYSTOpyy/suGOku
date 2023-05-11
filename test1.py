@@ -2,23 +2,23 @@
 
 import numpy as np
 import subprocess
-SIZE = 3
+SIZE = 4
 SIZE2 = SIZE**2
 SIZE4 = SIZE2**2
 
 def affichage(tab : np.ndarray):
     string = ""
-    for i in range(9):
-        for j in range(9):
+    for i in range(SIZE2):
+        for j in range(SIZE2):
             value = str(tab[i][j])
             if value == "0":
                 value = " "
             string+=value
-            if j%3==2 and j != 8:
+            if j%SIZE == SIZE-1 and j != SIZE2-1:
                 string+="|"
         string+="\n"
-        if i%3==2 and i != 8:
-                string+=11*"-"+"\n"
+        if i%SIZE == SIZE-1 and i != SIZE2-1:
+                string+=(SIZE2+SIZE-1)*"-"+"\n"
     print(string)
 
 
@@ -72,6 +72,7 @@ def init():
     affichage(tab)  # type: ignore
 
 def importSudoku() :
+    subprocess.run(["go","run","main.go","-size","16"])
     try : 
         data = open("output.txt", "r")
     except FileNotFoundError :
@@ -82,9 +83,8 @@ def importSudoku() :
         char=input[i]
         if char =='.':
             char = "0"
-        tab[i//9,i%9]= char
+        tab[i//SIZE2,i%SIZE2]= char
     return tab
 
 
 init()
-subprocess.run(["go","run","learn.go"])
