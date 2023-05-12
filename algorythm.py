@@ -206,7 +206,7 @@ def backtracking (grille: np.ndarray, printNbSolution: bool = False) :
     """
 
     if printNbSolution :
-        n = 3265920             # 9 factorielle * 9 
+        n = factorial(TAILLE)*TAILLE             # "9 factorielle * 9"
         bar = tqdm(total=n)     # bar de progression
         n = algo_backtracking_multiples(grille, 0, 0, bar)
         bar.close()

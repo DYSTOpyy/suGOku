@@ -1,13 +1,16 @@
 import pygame
 from pygame.locals import *
 import numpy as np
-pygame.init()
- 
-fenetre = pygame.display.set_mode((450,500))        # mettre l'écran
-continuer = True
-nb_cases_cote = 9
+from math import *
+
 TAILLE = 9
-TAILLE_CASE = min(fenetre.get_size()) / nb_cases_cote # min renvoie la valeur minimale d'une liste, ici la dimension de la fenêtre
+TAILLE_CASE = 50
+
+taille_grille = TAILLE * TAILLE_CASE
+
+pygame.init()
+fenetre = pygame.display.set_mode((TAILLE_CASE*TAILLE, TAILLE_CASE*TAILLE))        # mettre l'écran
+continuer = True
 
 def highlight (x,y) :
     
@@ -28,16 +31,28 @@ grille[0] = [[0, 0, 0, 0, 0, 0, 0, 1, 0, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]]
- 
-print(TAILLE_CASE)
+
+masque = np.copy(grille)
  
 font = pygame.font.SysFont("",35)
-flag = 0
+selection_case = 0
+selected_x, selected_y = 0, 0
+
+def change_case (valeur, x, y) :
+
+    x = x // TAILLE_CASE
+    y = y // TAILLE_CASE
+
+    if masque[0][x][y] == 0 :
+        grille[0][x][y] = valeur
+
 while continuer:
+
     fenetre.fill((255,255,255))
- 
+
     events = pygame.event.get()
     for event in events:
+
         if event.type == QUIT:
             continuer = False
             # mettre la sauvegarde ici !!
@@ -46,7 +61,30 @@ while continuer:
             # récuperer les coords et selon elle, 
         if event.type == MOUSEBUTTONDOWN:
             selected_x, selected_y = pygame.mouse.get_pos()
-            flag = 1
+            if (0 <= selected_x and selected_x <= taille_grille) and (0 <= selected_y and selected_y <= taille_grille) : 
+                selection_case = 1
+            else :
+                selection_case = 0
+        if event.type == pygame.KEYUP and selection_case:
+                if event.key == pygame.K_1 or event.key == pygame.K_KP1:
+                    change_case(1, selected_x, selected_y)
+                elif event.key == pygame.K_2 or event.key == pygame.K_KP2:
+                    change_case(2, selected_x, selected_y)
+                elif event.key == pygame.K_3 or event.key == pygame.K_KP3:
+                    change_case(3, selected_x, selected_y)
+                elif event.key == pygame.K_4 or event.key == pygame.K_KP4:
+                    change_case(4, selected_x, selected_y)
+                elif event.key == pygame.K_5 or event.key == pygame.K_KP5:
+                    change_case(5, selected_x, selected_y)
+                elif event.key == pygame.K_6 or event.key == pygame.K_KP6:
+                    change_case(6, selected_x, selected_y)
+                elif event.key == pygame.K_7 or event.key == pygame.K_KP7:
+                    change_case(7, selected_x, selected_y)
+                elif event.key == pygame.K_8 or event.key == pygame.K_KP8:
+                    change_case(8, selected_x, selected_y)
+                elif event.key == pygame.K_9 or event.key == pygame.K_KP9:
+                    change_case(9, selected_x, selected_y)
+
  
     for x in range(TAILLE):  # ligne
         for y in range(TAILLE):  # colonne 
@@ -57,12 +95,14 @@ while continuer:
             lettre_rect.center = [x*TAILLE_CASE + 1/2*TAILLE_CASE, y*TAILLE_CASE + 1/2*TAILLE_CASE] # mise du centre du rect au milieu de la case
             fenetre.blit( lettre , lettre_rect ) # on blit le tout
 
-    pygame.draw.line(fenetre, [0,0,255], [TAILLE_CASE*3-1, 0], [ TAILLE_CASE*3-1, TAILLE_CASE*TAILLE], 3)
-    pygame.draw.line(fenetre, [0,0,255], [ TAILLE_CASE*TAILLE, TAILLE_CASE*3-1], [ 0 , TAILLE_CASE*3-1], 3)
-    pygame.draw.line(fenetre, [0,0,255], [TAILLE_CASE*6-1, 0], [ TAILLE_CASE*6-1, TAILLE_CASE*TAILLE], 3)
-    pygame.draw.line(fenetre, [0,0,255], [ TAILLE_CASE*TAILLE, TAILLE_CASE*6-1], [ 0 , TAILLE_CASE*6-1], 3)
+    # Dessin des 4 lignes séparant les blocs
 
-    if flag == 1:
+    for nb in range (1, int(sqrt(TAILLE))) :
+        pygame.draw.line(fenetre, [0,0,255], [TAILLE_CASE*int(nb*sqrt(TAILLE))-1, 0], [ TAILLE_CASE*int(nb*sqrt(TAILLE))-1, TAILLE_CASE*TAILLE], 3)
+        pygame.draw.line(fenetre, [0,0,255], [ TAILLE_CASE*TAILLE, TAILLE_CASE*int(nb*sqrt(TAILLE))-1], [ 0 , TAILLE_CASE*int(nb*sqrt(TAILLE))-1], 3)
+
+
+    if selection_case:
         highlight(selected_x, selected_y)
  
     pygame.display.flip()
