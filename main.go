@@ -1,4 +1,4 @@
-package main // Necessaire pour build
+package main// Necessaire pour build
 
 import (
 	"flag"
@@ -8,6 +8,8 @@ import (
 	"time"
 	"golang.org/x/exp/slices"
 )
+const maxSize int  = 16
+
 
 func main() {
 	size := flag.Int("size", 9, "Taille du Sudoku")
@@ -20,15 +22,18 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Println(IsOkayCase(1,2,grid,*size,3))
 	}
-	test := []int{1,3} 
-	test=slices.Delete(test,1)
-	fmt.println(test)
+	// Tests sur les slices
+	// test := []int{1,3,4,7} 
+	// fmt.Println(test)
+	// test=slices.Delete(test,1,2)
+	// fmt.Println(test)
 }
 
-func generateFull(size int) [16][16]int {
+func generateFull(size int) [maxSize+1][maxSize+2]int {
 	var (
-		grid [16][16]int
+		grid [maxSize+1][maxSize+2]int
 	)
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
@@ -38,7 +43,7 @@ func generateFull(size int) [16][16]int {
 	return grid
 }
 
-func writeFile(grid [16][16]int, size int) error {
+func writeFile(grid [maxSize+1][maxSize+2]int, size int) error {
 	file, err := os.Create("output.txt")
 	if err != nil {
 		return err
