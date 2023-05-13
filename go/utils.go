@@ -4,6 +4,17 @@ import (
 	"math"
 )
 
+func Is_In (value int, slice []int) bool {
+
+	for _, v := range slice {
+		if (value == v) {
+			return true
+		}
+	}
+	return false
+
+}
+
 func IsOkayCase(x int, y int, grid [TAILLE + 2][TAILLE + 1]int, size int, value int) bool {
 	line := IsOkayLine(x, y, grid, size, value)
 	column := IsOkayColumn(x, y, grid, size, value)

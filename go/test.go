@@ -8,7 +8,7 @@ import (
 )
 
 // Taille de la grille de sudoku
-const TAILLE int = 9
+const TAILLE int = 16
 
 // grille_to_string convertit une grille en chaine de caractère, lisible depuis un .txt .
 // 
@@ -272,21 +272,33 @@ func resolution (grille *[TAILLE + 2][TAILLE + 1]int, possibilite *[TAILLE][TAIL
 	}
 }
 
+// afficher_temps permet d'afficher une durée efficaement.
+// Elle détermine si le meilleur affichage est en secondes, en minutes ou millisecondes.
+func afficher_temps (temps time.Duration) {
+	fmt.Print("TEMPS ÉCOULÉ : ")
+	if temps.Milliseconds() > 60000 {
+		fmt.Println(temps.Minutes(), "MINUTE.")
+	} else if temps.Milliseconds() > 1000 {
+		fmt.Println(temps.Seconds(), "SECONDE.")
+	} else {
+		fmt.Println(temps.Milliseconds(), "MILLISECONDES.")
+	}
+}
+
 func main() {
 
-	grille, possibilite, _ := init_grille(Grille_sudoku_exemple(TAILLE))		// REMPLACER _ PAR masque QUAND ON L'UTILISE
+	grille, possibilite , _ := init_grille(Grille_sudoku_exemple(TAILLE))		// REMPLACER _ PAR masque QUAND ON L'UTILISE
 
 	fmt.Println("GRILLE DE DEPART : ")
 	print_grille(&grille, false)
 	fmt.Println()
 
 	before := time.Now()
-	fmt.Println("Nombre de solutions : ", resolution(&grille, &possibilite, true))	// CALCUL DU NB DE SOLUTIONS
+	// fmt.Println("Nombre de solutions : ", resolution(&grille, &possibilite, true))	// CALCUL DU NB DE SOLUTIONS
 	// resolution(&grille, &possibilite, false)		// RESOLUTION DE LA GRILLE
 	after := time.Now()
 
-	diff := after.Sub(before)
-	fmt.Println("TEMPS ÉCOULÉ :", diff.Milliseconds(), "MILLISECONDES. \n")
+	afficher_temps(after.Sub(before))
 
 	print_grille(&grille, false)
 	
