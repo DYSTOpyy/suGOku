@@ -5,10 +5,12 @@ import (
 	"math"
 	"strconv" // int to string
 	"time"    // pour voir le temps de résolution
+
+	"git.saussesylva.in/DYSTO_pyy/Sudoku/utils"
 )
 
 // Taille de la grille de sudoku
-const TAILLE int = 16
+const TAILLE int = utils.TAILLE
 
 // grille_to_string convertit une grille en chaine de caractère, lisible depuis un .txt .
 // 
@@ -68,7 +70,7 @@ func generer_possibilite(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE][]
 
 			for value := 1; value < TAILLE+1; value++ {
 
-				if grille[line][column] == 0 && IsOkayCase(line, column, *grille, TAILLE, value) {
+				if grille[line][column] == 0 && utils.IsOkayCase(line, column, *grille, TAILLE, value) {
 
 					// si la valeur est possible, on l'ajoute au slice des possibilitées
 					c = append(c, value)
@@ -193,7 +195,7 @@ func algo_backtracking(grille *[TAILLE + 2][TAILLE + 1]int, line int, column int
 	} else {
 
 		for _, value := range possibilite[line][column] {
-			if IsOkayCase(line, column, *grille, TAILLE, value) {
+			if utils.IsOkayCase(line, column, *grille, TAILLE, value) {
 				// Si la valeur est possible on l'attribue à la case
 				grille[line][column] = value
 
@@ -230,7 +232,7 @@ func nombre_solutions(grille *[TAILLE + 2][TAILLE + 1]int, line int, column int,
 		var n int = 0
 
 		for _, value := range possibilite[line][column] {
-			if IsOkayCase(line, column, *grille, TAILLE, value) {
+			if utils.IsOkayCase(line, column, *grille, TAILLE, value) {
 				// Si la valeur est possible on l'attribue à la case
 				grille[line][column] = value
 
@@ -285,9 +287,9 @@ func afficher_temps (temps time.Duration) {
 	}
 }
 
-func main() {
+func test() {
 
-	grille, possibilite , _ := init_grille(Grille_sudoku_exemple(TAILLE))		// REMPLACER _ PAR masque QUAND ON L'UTILISE
+	grille, possibilite , _ := init_grille(utils.Grille_sudoku_exemple(TAILLE))		// REMPLACER _ PAR masque QUAND ON L'UTILISE
 
 	fmt.Println("GRILLE DE DEPART : ")
 	print_grille(&grille, false)

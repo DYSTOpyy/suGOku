@@ -32,9 +32,9 @@ func main() {
 	// fmt.Println(test)
 }
 
-func generateFull(size int) [maxSize+1][maxSize+2]int {
+func generateFull(size int) [maxSize+2][maxSize+1]int {
 	var (
-		grid [maxSize+1][maxSize+2]int
+		grid [maxSize+2][maxSize+1]int
 	)
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
@@ -44,7 +44,7 @@ func generateFull(size int) [maxSize+1][maxSize+2]int {
 	return grid
 }
 
-func writeFile(grid [maxSize+1][maxSize+2]int, size int) error {
+func writeFile(grid [maxSize+2][maxSize+1]int, size int) error {
 	file, err := os.Create("output.txt")
 	if err != nil {
 		return err
