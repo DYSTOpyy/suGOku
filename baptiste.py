@@ -53,60 +53,6 @@ def afficher_grille (grille:np.ndarray, plan:int) -> None:
 
     print("Nombre d'indices total :", grille[0][TAILLE][TAILLE])
     
-def maj_compteurs (grille:np.ndarray) -> None:
-    """ met a jour les compteurs de nb de cases par ligne/colonne/carré
-    
-    Arguments :
-    grille  : numpy.ndarray  -- la grille de jeu avec les compteurs
-    """
-
-    for line in range (TAILLE) :
-        for column in range (TAILLE) :
-
-            if (grille[0][line][column] != 0) :
-                grille[0][line][TAILLE] += 1                       # maj des lignes 
-                grille[0][TAILLE][column] += 1                       # maj des colonnes 
-                grille[0][TAILLE][TAILLE] += 1
-                grille[0][TAILLE+1][(line//int(sqrt(TAILLE)))*int(sqrt(TAILLE))+(column//int(sqrt(TAILLE)))] += 1       # maj des carrés
-
-def is_okay_case (grille:np.ndarray, valeur:int, ligne:int, col:int) -> bool :
-    """ vérifie si une valeur est possible à un endroit ligne/col donné 
-    dans la grille de jeu 
-    
-    Arguments :
-    grille  : numpy.ndarray -- la grille de jeu contenant la case à vérifier
-    valeur  : int           -- la valeur à tester
-    ligne   : int           -- la ligne sur laquelle est la case
-    col     : int           -- la colonne sur laquelle est la case
-    """
-
-    for i in range (TAILLE) :
-
-        if (grille[0][ligne][i] == valeur 
-            or grille[0][i][col] == valeur 
-            or grille[0][(ligne // int(sqrt(TAILLE))) * int(sqrt(TAILLE)) + i // int(sqrt(TAILLE))][(col // int(sqrt(TAILLE))) * int(sqrt(TAILLE)) + i % int(sqrt(TAILLE))] == valeur) :
-            return False 
-        
-    return True
-
-def is_okay_grille (grille:np.ndarray) -> bool :
-    """ prend n'importe quelle grille COMPLETE et renvoi si elle est valide 
-    ou non selon les contraintes, sans distinction de case (déjà là ou 
-    rentrée manuellement) 
-    
-    Arguments :
-    grille  : numpy.ndarray -- la grille de jeu à vérifier
-    """
-
-    for line in range (TAILLE) :
-        for column in range (TAILLE) :
-
-            if not is_okay_case(grille, grille[0][line][column], line, column) :
-
-                return False
-            
-    return True
-
 
 def remplir_possibilite (grille:np.ndarray) -> None :
     """ rempli toute la matrice 3D de sorte a avoir des 1 sur le plan X si X 

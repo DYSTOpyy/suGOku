@@ -1,8 +1,10 @@
-package main
+package utils
 
 import (
 	"math"
 )
+
+const maxSize int  = 16
 
 func IsOkayCase(x int, y int, grid [maxSize+1][maxSize+2]int,size int, value int) bool {
 	line := IsOkayLine(x,y,grid,size,value)	

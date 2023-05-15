@@ -6,10 +6,11 @@ import (
 	"math/rand"
 	"os"
 	"time"
-	"golang.org/x/exp/slices"
+	// "golang.org/x/exp/slices"
+	"git.saussesylva.in/DYSTO_pyy/Sudoku/utils"
 )
-const maxSize int  = 16
 
+const maxSize int  = 16
 
 func main() {
 	size := flag.Int("size", 9, "Taille du Sudoku")
@@ -22,7 +23,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println(IsOkayCase(1,2,grid,*size,3))
+		fmt.Println(utils.IsOkayCase(1,2,grid,*size,3))
 	}
 	// Tests sur les slices
 	// test := []int{1,3,4,7} 
