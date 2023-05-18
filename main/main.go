@@ -25,6 +25,7 @@ func main() {
 		}
 		fmt.Println(utils.IsOkayCase(1,2,grid,*size,3))
 	}
+	
 	// Tests sur les slices
 	// test := []int{1,3,4,7} 
 	// fmt.Println(test)
