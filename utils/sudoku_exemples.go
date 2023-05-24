@@ -4,7 +4,7 @@ import "fmt"
 
 // Grille_sudoku_exemple renvoi des grilles de test sudoku.
 // Deux grilles disponible selon la size en paramètre : 9x9 ou 16x16
-func Grille_sudoku_exemple (size int) *[TAILLE + 2][TAILLE + 1]int {
+func Grille_sudoku_exemple () *[TAILLE + 2][TAILLE + 1]int {
 
 	void_return := [TAILLE + 2][TAILLE + 1]int{}
 
@@ -50,10 +50,10 @@ func Grille_sudoku_exemple (size int) *[TAILLE + 2][TAILLE + 1]int {
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
-	if size == 9 {
+	if Size == 9 {
 		return &Grille9
 	} else 
-	if size == 16{
+	if Size == 16{
 		return &Grille16
 	} else {
 		fmt.Println("ERREUR DE VALEUR : GRILLE VIDE RETOURNÉE")

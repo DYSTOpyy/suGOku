@@ -10,6 +10,8 @@ import (
 	"git.saussesylva.in/DYSTO_pyy/Sudoku/utils"
 )
 
+
+
 const maxSize int  = 16
 
 func main() {
@@ -23,7 +25,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println(utils.IsOkayCase(1,2,grid,*size,3))
+		fmt.Println(utils.IsOkayCase(1,2,grid,3))
 	}
 	
 	// Tests sur les slices

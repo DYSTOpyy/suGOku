@@ -1,43 +1,48 @@
 package utils
 
 import (
-	"math"
 	"fmt"
+	"math"
+	"math/rand"
 	"strconv"
+
+	"golang.org/x/exp/slices"
 )
 
+var Size = 9
 
+const TAILLE int  = 16
 
-func IsOkayCase(x int, y int, grid [TAILLE+2][TAILLE+1]int,size int, value int) bool {
-	line := IsOkayLine(x,y,grid,size,value)	
-	column := IsOkayColumn(x,y,grid,size,value)	
-	box := IsOkayBox(x,y,grid,size,value)	
+func IsOkayCase(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
+	line := IsOkayLine(x,y,grid,value)	
+	column := IsOkayColumn(x,y,grid,value)	
+	box := IsOkayBox(x,y,grid,value)	
 	return line && column && box
 }
 
-func IsOkayLine(x int, y int, grid [TAILLE+2][TAILLE+1]int, size int, value int) bool {
+func IsOkayLine(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	i:=0
-	for i < size && grid[x][i] != value {
+	for i < Size && grid[x][i] != value {
 		i++
 	}
-	return i == size
+	return i == Size
 }
 
-func IsOkayColumn(x int, y int, grid [TAILLE+2][TAILLE+1]int, size int, value int) bool {
+func IsOkayColumn(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	i:=0
-	for i < size && grid[i][y] != value {
+	for i < Size && grid[i][y] != value {
 		i++
 	}
-	return i == size
+	return i == Size
 }
 
-func IsOkayBox(x int, y int, grid [TAILLE+2][TAILLE+1]int, size int, value int) bool {
-	root := int(math.Sqrt(float64(size)))
+func IsOkayBox(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
+	root := int(math.Sqrt(float64(Size)))
 	i:=0
-	for i < size && grid[int(x/root)*root+int(i/root)][int(y/root)*root+i%root] != value {
+	for i < Size && grid[int(x/root)*root+int(i/root)][int(y/root)*root+i%root] != value {
 		i++
 	}
-	return i == size
+	return i == Size
 }
 
 func Is_In (value int, slice []int) bool {
@@ -57,16 +62,22 @@ func Is_In (value int, slice []int) bool {
 // de la grille situé en TAILLE:TAILLE.
 //
 // La grille en argument doit être sous forme de pointeur.
-func maj_compteurs(grille *[TAILLE + 2][TAILLE + 1]int) {
-
-	for line := 0; line < TAILLE; line++ {
-		for column := 0; column < TAILLE; column++ {
+func Maj_compteurs(grille *[TAILLE + 2][TAILLE + 1]int) {
+	// Reinitialisation à 0	
+	for index :=0 ; index<Size; index++{
+		grille[index][Size] = 0                                                                                                              // maj des lignes
+		grille[Size][index] = 0
+		grille[Size+1][index] = 0   
+	}
+	grille[Size][Size] = 0
+	// Remplissage
+	for line := 0; line < Size; line++ {
+		for column := 0; column < Size; column++ {
 			if grille[line][column] != 0 {
-
-				grille[line][TAILLE] += 1                                                                                                              // maj des lignes
-				grille[TAILLE][column] += 1                                                                                                            // maj des colonnes
-				grille[TAILLE+1][(line/int(math.Sqrt(float64(TAILLE))))*int(math.Sqrt(float64(TAILLE)))+(column/int(math.Sqrt(float64(TAILLE))))] += 1 // maj des bloc
-				grille[TAILLE][TAILLE] += 1                                                                                                            // maj du nombre total d'indice
+				grille[line][Size] += 1                                                                                                              // maj des lignes
+				grille[Size][column] += 1                                                                                                            // maj des colonnes
+				grille[Size+1][(line/int(math.Sqrt(float64(Size))))*int(math.Sqrt(float64(Size)))+(column/int(math.Sqrt(float64(Size))))] += 1 // maj des bloc
+				grille[Size][Size] += 1                                                                                                          // maj du nombre total d'indice
 			}
 		}
 	}
@@ -76,23 +87,23 @@ func maj_compteurs(grille *[TAILLE + 2][TAILLE + 1]int) {
 // Si string_output=true, alors la grille n'est pas affichée mais renvoyée en string.
 //
 // La grille en argument doit être sous forme de pointeur.
-func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,size int ,string_output bool) string {
+func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,string_output bool) string {
 
 	text := ""
-	for line := 0; line < size; line++ {
+	for line := 0; line < Size; line++ {
 
 		// séparateur de bloc horizontale
-		if line%int(math.Sqrt(float64(size))) == 0 && line != 0 {
-			for i := 0; i < (int(math.Sqrt(float64(size)))+1)*int(math.Sqrt(float64(size))); i++ {
+		if line%int(math.Sqrt(float64(Size))) == 0 && line != 0 {
+			for i := 0; i < (int(math.Sqrt(float64(Size)))+1)*int(math.Sqrt(float64(Size))); i++ {
 				text = text + "-"
 			}
 			text = text + "\n"
 		}
 
-		for column := 0; column < size; column++ {
+		for column := 0; column < Size; column++ {
 
 			// séparateur de bloc vertical
-			if column%int(math.Sqrt(float64(size))) == 0 && column != 0 {
+			if column%int(math.Sqrt(float64(Size))) == 0 && column != 0 {
 				text = text + "|"
 			}
 
@@ -112,17 +123,17 @@ func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,size int ,string_output bo
 		}
 
 		// Compteur de ligne
-		text = text + " (" + strconv.Itoa(grille[line][size]) + ")\n"
+		text = text + " (" + strconv.Itoa(grille[line][Size]) + ")\n"
 
 	}
 
 	text = text + "\n"
 
 	// compteur de colonne + bloc
-	for line := size; line < size+2; line++ {
-		for column := 0; column < size; column++ {
+	for line := Size; line < Size+2; line++ {
+		for column := 0; column < Size; column++ {
 
-			if column%int(math.Sqrt(float64(size))) == 0 && column != 0 {
+			if column%int(math.Sqrt(float64(Size))) == 0 && column != 0 {
 
 				text += "|"
 			}
@@ -131,7 +142,7 @@ func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,size int ,string_output bo
 		text += "\n"
 	}
 
-	text += "Nombre d'indices total :" + strconv.Itoa(grille[size][size])
+	text += "Nombre d'indices total :" + strconv.Itoa(grille[Size][Size])
 
 	if string_output {
 		return text
@@ -146,19 +157,19 @@ func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,size int ,string_output bo
 // qui EST RENVOYÉ où chaque case contient un slice représentant les valeurs possibles (vide si la case est occupée).
 //
 // La grille en argument doit être sous forme de pointeur.
-func Generer_possibilite(grille *[TAILLE + 2][TAILLE + 1]int, size int) [TAILLE][TAILLE][]int {
+func Generer_possibilite(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE][]int {
 
 	possibilite := [TAILLE][TAILLE][]int{}
 
 	// pour chaque case
-	for line := 0; line < size; line++ {
-		for column := 0; column < size; column++ {
+	for line := 0; line < Size; line++ {
+		for column := 0; column < Size; column++ {
 
 			c := []int{}
 
-			for value := 1; value < size+1; value++ {
+			for value := 1; value < Size+1; value++ {
 
-				if grille[line][column] == 0 && IsOkayCase(line, column, *grille, size, value) {
+				if grille[line][column] == 0 && IsOkayCase(line, column, *grille,value) {
 
 					// si la valeur est possible, on l'ajoute au slice des possibilitées
 					c = append(c, value)
@@ -176,12 +187,12 @@ func Generer_possibilite(grille *[TAILLE + 2][TAILLE + 1]int, size int) [TAILLE]
 // si c'est faux, cela signifie que la case était vide au départ et que son contenu est choisi par le joueur.
 //
 // La grille en argument doit être sous forme de pointeur.
-func Generer_masque (grille *[TAILLE + 2][TAILLE + 1]int,size int) [TAILLE][TAILLE]bool {
+func Generer_masque (grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE]bool {
 
 	masque := [TAILLE][TAILLE]bool{}
 
-	for line := 0; line < size; line++ {
-		for column := 0; column < size; column++ {
+	for line := 0; line < Size; line++ {
+		for column := 0; column < Size; column++ {
 			
 			if grille[line][column] != 0 {
 				masque[line][column] = true
@@ -193,3 +204,13 @@ func Generer_masque (grille *[TAILLE + 2][TAILLE + 1]int,size int) [TAILLE][TAIL
 	return masque
 }
 
+func ListRandomize(liste []int) []int {
+	length := len(liste)
+	nb_change := rand.Int()%int(length/2)+int(length/2)
+	for i := 0; i < nb_change; i++ {
+		index := rand.Int()%length
+		number := liste[index]
+		liste = slices.Insert(liste,rand.Int()%(length-1),number)
+	}
+	return liste
+}
