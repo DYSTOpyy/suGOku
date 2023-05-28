@@ -18,11 +18,10 @@ const TAILLE int = utils.TAILLE
 // possibilite est également un un pointeur, puisqu'il n'est jamais modifié dedans.
 func Algo_backtracking(grille *[TAILLE + 2][TAILLE + 1]int, possibilite *[TAILLE][TAILLE][]int, liste []int) bool {
 	// Condition d'arrêt : lorsque la liste est vide
-	size := utils.Size
 	if len(liste) == 0 {
 		return true
 	}
-	line, column := int(liste[0]/size), liste[0]%size
+	line, column := utils.IndexToLinCol(liste[0])
 	for _, value := range possibilite[line][column] {
 		if utils.IsOkayCase(line, column, *grille, value) {
 			// Si la valeur est possible on l'attribue à la case
@@ -42,20 +41,14 @@ func Algo_backtracking(grille *[TAILLE + 2][TAILLE + 1]int, possibilite *[TAILLE
 	return false
 }
 
-func DiggingHoles( grille *[TAILLE + 2][TAILLE + 1]int, diff Difficulty) {
+func DiggingHoles(grille *[TAILLE + 2][TAILLE + 1]int, diff Difficulty) {
 	AlgoDig, nb_case, min_line := EditDifficulty(diff)
 	digTable := FillDiggable()
 	nbRemovedCase := 1
 	linToDig, colToDig := rand.Int()%utils.Size,rand.Int()%utils.Size
-	digTable[linToDig][colToDig] = false
-	grille[linToDig][colToDig] = 0
-	utils.Maj_compteurs(grille)
-	for ContinueDigging(digTable) {
-		newLinToDig, newColToDig := AlgoDig(grille,digTable,linToDig,colToDig)
-		if nbRemovedCase + 1 > utils.Size*utils.Size-nb_case {
-			digTable[newLinToDig][newColToDig] = false
-			continue
-		}
+	Dig(grille,digTable,linToDig,colToDig)
+	for nbRemovedCase < utils.Size * utils.Size - nb_case && ContinueDigging(digTable) {
+		newLinToDig, newColToDig := AlgoDig(digTable,linToDig,colToDig)
 		if (grille[newLinToDig][utils.Size] - 1 < min_line || grille[utils.Size][newColToDig] - 1 < min_line){
 			digTable[newLinToDig][newColToDig] = false
 			continue
@@ -63,16 +56,17 @@ func DiggingHoles( grille *[TAILLE + 2][TAILLE + 1]int, diff Difficulty) {
 		Copy := *grille
 		if IsSolutionUnique(Copy,newLinToDig,newColToDig) {
 			linToDig,colToDig = newLinToDig, newColToDig
-			digTable[linToDig][colToDig] = false
-			grille[linToDig][colToDig] = 0
+			Dig(grille,digTable,linToDig,colToDig)
 			nbRemovedCase += 1
-			utils.Maj_compteurs(grille)
+			
+		} else {
+			digTable[newLinToDig][newColToDig] = false
 		}
 	}
 }
 
-// Renvoie l'indice de ligne et de la colonne à miner, determiner par hasard
-func RandomDig(grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+// Renvoie l'indice de ligne et de la colonne à miner, determiner par hasard 
+func RandomDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
 	linNew := rand.Int() % utils.Size
 	colNew := rand.Int() % utils.Size
 	for !digTable[linNew][colNew] {
@@ -82,24 +76,84 @@ func RandomDig(grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bo
 	return linNew, colNew
 }
 
-// Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Jumping One ~ 10 milliseconds
-func JumpingDig(grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
-	return linPrev,colPrev
+// Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Jumping One 
+
+func JumpingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+	linNew, colNew := linPrev, colPrev
+	ToLeft := linNew % 2
+	for !digTable[linNew][colNew] {
+		if ToLeft == 1{
+			colNew -= 2
+			if colNew < 0 {
+				colNew += 1 + 2 * ((colNew + 3) % 2)
+				linNew += 1
+				if linNew >= utils.Size{
+					linNew = 0
+					colNew = 0 + (colNew % 2)
+				}
+			}
+		} else {
+			colNew += 2
+			if colNew >= utils.Size{
+				colNew -= 1 + 2 * ((colNew + 1) % 2)
+				linNew += 1
+				if linNew >= utils.Size{
+					linNew = 0
+					colNew = 0 + (colNew % 2)
+				}
+			}
+		}
+		ToLeft = linNew % 2
+	}
+	return linNew, colNew 
 }
 
 // Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Wandering along S
-func WanderingDig(grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
-	return linPrev,colPrev
+func WanderingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+	linNew, colNew := linPrev, colPrev
+	ToLeft := linNew % 2
+	for !digTable[linNew][colNew] {
+		if ToLeft == 1 {
+			colNew -= 1
+			if colNew < 0 {
+				colNew = 0
+				linNew += 1				
+			}
+		} else {
+			colNew += 1
+			if colNew >= utils.Size {
+				colNew = utils.Size - 1
+				linNew += 1
+			}
+		}
+		if linNew >= utils.Size{
+			linNew = 0
+			colNew = 0
+		}
+		ToLeft = linNew % 2
+	}
+	return linNew , colNew
 }
 
 // Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Left to Right then Top to Bottom
-func TopBottomDig(grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
-	return linPrev,colPrev
+func TopBottomDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+	linNew, colNew := linPrev, colPrev
+	for !digTable[linNew][colNew] {
+		colNew +=  1
+		if colNew >= utils.Size{
+			colNew -= utils.Size
+			linNew += 1
+			if linNew >= utils.Size{
+				linNew = 0
+			}
+		}
+	}
+	return linNew, colNew
 }
 
 func IsSolutionUnique(grille [TAILLE + 2][TAILLE + 1]int, linToDig int,colToDig int) bool{
 	listValue := []int{}
-	for i := 1; i < utils.Size+1; i++ {
+	for i := 1; i < utils.Size + 1; i++ {
 		if i!= grille[linToDig][colToDig]{
 			listValue = append(listValue, i)
 		}
@@ -115,4 +169,10 @@ func IsSolutionUnique(grille [TAILLE + 2][TAILLE + 1]int, linToDig int,colToDig 
 		}
 	}
 	return true
+}
+
+func Dig (grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bool, linToDig int, colToDig int) {
+	digTable[linToDig][colToDig] = false
+	grille[linToDig][colToDig] = 0
+	utils.Maj_compteurs(grille)
 }

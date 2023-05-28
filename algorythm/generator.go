@@ -3,17 +3,18 @@ package algo
 import (
 	"math"
 	"math/rand"
-	
+
 	"git.saussesylva.in/DYSTO_pyy/Sudoku/utils"
 )
 
 type Difficulty int
 
 const (
-	Easy Difficulty = 0
-	Medium Difficulty = 1
-	Hard Difficulty = 2
-	Evil Difficulty = 3
+	Beginner Difficulty = 0
+	Easy Difficulty = 1
+	Medium Difficulty = 2
+	Hard Difficulty = 3
+	Evil Difficulty = 4
 )
 
 
@@ -43,7 +44,6 @@ func GenGridInit( grille *[TAILLE + 2][TAILLE + 1]int){
 	}
 	liste = utils.ListRandomize(liste)
 	Algo_backtracking(grille,&possibilite,liste)
-	utils.Print_grille(grille,false)
 }
 
 func GeneratorFull(diff Difficulty) *[TAILLE + 2][TAILLE + 1]int {
@@ -53,33 +53,36 @@ func GeneratorFull(diff Difficulty) *[TAILLE + 2][TAILLE + 1]int {
 	possibilite := utils.Generer_possibilite(&grille)
 	Algo_backtracking(&grille,&possibilite,liste)
 	utils.Maj_compteurs(&grille)
-	utils.Print_grille(&grille,false)
 	DiggingHoles(&grille,diff)
 	return &grille
 }
 
 
 // Retourne la fonction de Digging, le nombre de cases données et le minimum par ligne
-func EditDifficulty(diff Difficulty) (func(*[TAILLE + 2][TAILLE + 1]int,*[TAILLE][TAILLE]bool,int,int) (int,int),int,int) {
+func EditDifficulty(diff Difficulty) (func(*[TAILLE][TAILLE]bool,int,int) (int,int),int,int) {
 	var (
 		nb_case int
 		min_line int
-		algoDig func(*[TAILLE + 2][TAILLE + 1]int,*[TAILLE][TAILLE]bool,int,int) (int,int)
+		algoDig func(*[TAILLE][TAILLE]bool,int,int) (int,int)
 	)
 	switch diff {
-	case Easy:
+	case Beginner :
+		nb_case = rand.Int()%6+50
+		min_line = 5
+		algoDig = RandomDig
+	case Easy :
 		nb_case = rand.Int()%14+36
 		min_line = 4
 		algoDig = RandomDig
-	case Medium:
+	case Medium :
 		nb_case = rand.Int()%3+32
 		min_line = 3
 		algoDig = JumpingDig
-	case Hard:
+	case Hard :
 		nb_case = rand.Int()%3+28
 		min_line = 2
 		algoDig = WanderingDig
-	case Evil:
+	case Evil :
 		nb_case = rand.Int()%5+22
 		min_line = 0
 		algoDig = TopBottomDig

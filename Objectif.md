@@ -2,6 +2,8 @@
 
 Difficulté: Nb cases; Min cases / ligne; Algo digging
 
+Beginner: +50; 5; Random
+
 Easy: 36-50; 4; Random
 
 Medium: 32-35; 3; Jumping One

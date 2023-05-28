@@ -5,7 +5,7 @@ import (
 	"math"
 	"math/rand"
 	"strconv"
-
+	"os"
 	"golang.org/x/exp/slices"
 )
 
@@ -152,6 +152,51 @@ func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,string_output bool) string
 	}
 }
 
+func Print_digTable(grille *[TAILLE][TAILLE]bool) string {
+
+	text := ""
+	for line := 0; line < Size; line++ {
+
+		// séparateur de bloc horizontale
+		if line%int(math.Sqrt(float64(Size))) == 0 && line != 0 {
+			for i := 0; i < (int(math.Sqrt(float64(Size)))+1)*int(math.Sqrt(float64(Size))); i++ {
+				text = text + "-"
+			}
+			text = text + "\n"
+		}
+
+		for column := 0; column < Size; column++ {
+
+			// séparateur de bloc vertical
+			if column%int(math.Sqrt(float64(Size))) == 0 && column != 0 {
+				text = text + "|"
+			}
+
+			if grille[line][column] {
+				text = text + "1"
+			} else {
+				text = text + "0"
+			}
+			
+		}
+		text = text + "\n"
+	}
+	fmt.Println(text)
+	return ""
+}
+
+func Sum_DigTable(grille *[TAILLE][TAILLE]bool) int {
+	count := 0
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++ {
+			if grille[i][j]{
+				count+=1
+			}
+		}
+	}
+	return count
+}
+
 // generer_possibilite calcule les valeurs possibles pour chaque case vide
 // d'une grille qu'il place dans un slice de dimension TAILLE:TAILLE (donc pas la même dimension que la grille !)
 // qui EST RENVOYÉ où chaque case contient un slice représentant les valeurs possibles (vide si la case est occupée).
@@ -213,4 +258,30 @@ func ListRandomize(liste []int) []int {
 		liste = slices.Insert(liste,rand.Int()%(length-1),number)
 	}
 	return liste
+}
+
+func IndexToLinCol(index int) (int,int) {
+	line, column := int(index/Size), index%Size
+	return line , column
+}
+
+func writeFile(grid [TAILLE+2][TAILLE+1]int, size int) error {
+	file, err := os.Create("output.txt")
+	if err != nil {
+		return err
+	}
+	for i := 0; i < size; i++ {
+		for j := 0; j < size; j++ {
+			char := fmt.Sprint(grid[i][j])
+			if char == "0" {
+				char = "."
+			}
+			_, err2 := file.WriteString(char)
+			if err2 != nil {
+				file.Close()
+				return err2
+			}
+		}
+	}
+	return nil
 }
