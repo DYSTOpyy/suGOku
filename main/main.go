@@ -14,22 +14,22 @@ const TAILLE int = utils.TAILLE
 // grille_to_string convertit une grille en chaine de caractère, lisible depuis un .txt .
 // 
 // La grille en argument doit être sous forme de pointeur.
-func grille_to_string(grille *[TAILLE + 2][TAILLE + 1]int) string {
+// func grille_to_string(grille *[TAILLE + 2][TAILLE + 1]int) string {
 
-	text := ""
-	for line := 0; line < TAILLE; line++ {
-		for column := 0; column < TAILLE; column++ {
-			if grille[line][column] == 0 {
-				text = text + "."
-			} else if grille[line][column] > 9 {
-				text = text + string(grille[line][column]-10+65)
-			} else {
-				text = text + string(grille[line][column]+48)
-			}
-		}
-	}
-	return text
-}
+// 	text := ""
+// 	for line := 0; line < utils.Size; line++ {
+// 		for column := 0; column < utils.Size; column++ {
+// 			if grille[line][column] == 0 {
+// 				text = text + "."
+// 			} else if grille[line][column] > 9 {
+// 				text = text + string(grille[line][column]-10+65)
+// 			} else {
+// 				text = text + string(grille[line][column]+48)
+// 			}
+// 		}
+// 	}
+// 	return text
+// }
 
 
 
@@ -169,15 +169,18 @@ func main() {
 	// afficher_temps(after.Sub(before))
 
 	// utils.Print_grille(&grille, false)
-
+	grille, _ , masque := init_grille(utils.Grille_sudoku_exemple())
+	utils.SaveFile(grille,masque)
 	before := time.Now()
-	NewGrille := algo.GeneratorFull(algo.Evil)
+	NewGrille := algo.GeneratorFull(algo.Easy)
 	after := time.Now()
 	utils.Print_grille(NewGrille,false)
 	afficher_temps(after.Sub(before))
+	// fmt.Println(grille_to_string(NewGrille))
+	
 	possibilite2 := utils.Generer_possibilite(NewGrille)
 	fmt.Println(resolution(NewGrille, &possibilite2, false))
-	
+	utils.Print_grille(NewGrille,false)
 	// GrilleGen, possibilite2 , _ := init_grille(NewGrille)
 	// fmt.Println("GRILLE DE DEPART : ")
 	// utils.Print_grille(&GrilleGen, false)

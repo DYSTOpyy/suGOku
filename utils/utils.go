@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand"
 	"strconv"
-	"os"
 	"golang.org/x/exp/slices"
 )
 
@@ -232,7 +231,7 @@ func Generer_possibilite(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE][]
 // si c'est faux, cela signifie que la case était vide au départ et que son contenu est choisi par le joueur.
 //
 // La grille en argument doit être sous forme de pointeur.
-func Generer_masque (grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE]bool {
+func Generer_masque(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE]bool {
 
 	masque := [TAILLE][TAILLE]bool{}
 
@@ -265,23 +264,3 @@ func IndexToLinCol(index int) (int,int) {
 	return line , column
 }
 
-func writeFile(grid [TAILLE+2][TAILLE+1]int, size int) error {
-	file, err := os.Create("output.txt")
-	if err != nil {
-		return err
-	}
-	for i := 0; i < size; i++ {
-		for j := 0; j < size; j++ {
-			char := fmt.Sprint(grid[i][j])
-			if char == "0" {
-				char = "."
-			}
-			_, err2 := file.WriteString(char)
-			if err2 != nil {
-				file.Close()
-				return err2
-			}
-		}
-	}
-	return nil
-}
