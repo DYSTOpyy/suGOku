@@ -7,11 +7,8 @@ import (
 	"time"    // pour voir le temps de résolution
 )
 
-// Taille de la grille de sudoku
-const TAILLE int = 16
-
 // grille_to_string convertit une grille en chaine de caractère, lisible depuis un .txt .
-// 
+//
 // La grille en argument doit être sous forme de pointeur.
 func grille_to_string(grille *[TAILLE + 2][TAILLE + 1]int) string {
 
@@ -86,13 +83,13 @@ func generer_possibilite(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE][]
 // si c'est faux, cela signifie que la case était vide au départ et que son contenu est choisi par le joueur.
 //
 // La grille en argument doit être sous forme de pointeur.
-func generer_masque (grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE]bool {
+func generer_masque(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE]bool {
 
 	masque := [TAILLE][TAILLE]bool{}
 
 	for line := 0; line < TAILLE; line++ {
 		for column := 0; column < TAILLE; column++ {
-			
+
 			if grille[line][column] != 0 {
 				masque[line][column] = true
 			} else {
@@ -245,24 +242,27 @@ func nombre_solutions(grille *[TAILLE + 2][TAILLE + 1]int, line int, column int,
 
 // init_grille génère une grille puis détermine ses compteurs et ses possibilité.
 // C'est une fonction à retour multiple, qui renvoie la grille et les possibilités.
-// 
+//
 // La grille en argument doit être sous forme de pointeur.		DOIT DISPARAITRE POUR LAISSER PLACE A UN ARGUMENT "DIFFICULTE"
-func init_grille (grille *[TAILLE + 2][TAILLE + 1]int) ([TAILLE + 2][TAILLE + 1]int,[TAILLE][TAILLE][]int, [TAILLE][TAILLE]bool) {
-	
+func init_grille(grille *[TAILLE + 2][TAILLE + 1]int) ([TAILLE + 2][TAILLE + 1]int, [TAILLE][TAILLE][]int, [TAILLE][TAILLE]bool, [TAILLE][TAILLE]bool) {
+
 	// générer la grille
 	// mettre à jour ses compteurs
 	maj_compteurs(grille)
 	// générer la grille de possibilité
+	// générer la grille de vérification (vide certes mais quand même)
+	var verifier [TAILLE][TAILLE]bool
 	// renvoyer les deux
-	return *grille, generer_possibilite(grille), generer_masque(grille)
+	return *grille, generer_possibilite(grille), generer_masque(grille), verifier
+
 }
 
 // resolution permet d'appeler les fonctions de résolution de grille sudoku.
 // A partir d'une grille et de ses possibilites, si print_nb_solution est vrai : renvoi le nombre de solutions possibles.
 // La grille ne sera pas modifiée. Si print_nb_solution est faux, la grille sera résolue selon la première solution trouvée.
-// 
+//
 // La grille en argument doit être sous forme de pointeur.
-func resolution (grille *[TAILLE + 2][TAILLE + 1]int, possibilite *[TAILLE][TAILLE][]int, print_nb_solution bool) int {
+func resolution(grille *[TAILLE + 2][TAILLE + 1]int, possibilite *[TAILLE][TAILLE][]int, print_nb_solution bool) int {
 
 	if print_nb_solution {
 		return nombre_solutions(grille, 0, 0, possibilite)
@@ -274,7 +274,7 @@ func resolution (grille *[TAILLE + 2][TAILLE + 1]int, possibilite *[TAILLE][TAIL
 
 // afficher_temps permet d'afficher une durée efficaement.
 // Elle détermine si le meilleur affichage est en secondes, en minutes ou millisecondes.
-func afficher_temps (temps time.Duration) {
+func afficher_temps(temps time.Duration) {
 	fmt.Print("TEMPS ÉCOULÉ : ")
 	if temps.Milliseconds() > 60000 {
 		fmt.Println(temps.Minutes(), "MINUTE.")
@@ -285,27 +285,25 @@ func afficher_temps (temps time.Duration) {
 	}
 }
 
-func main() {
+// func main() {
 
-	grille, possibilite , _ := init_grille(Grille_sudoku_exemple(TAILLE))		// REMPLACER _ PAR masque QUAND ON L'UTILISE
+// grille, possibilite, _ := init_grille(Grille_sudoku_exemple(TAILLE)) // REMPLACER _ PAR masque QUAND ON L'UTILISE
 
-	fmt.Println("GRILLE DE DEPART : ")
-	print_grille(&grille, false)
-	fmt.Println()
+// fmt.Println("GRILLE DE DEPART : ")
+// print_grille(&grille, false)
+// fmt.Println()
 
-	before := time.Now()
-	// fmt.Println("Nombre de solutions : ", resolution(&grille, &possibilite, true))	// CALCUL DU NB DE SOLUTIONS
-	// resolution(&grille, &possibilite, false)		// RESOLUTION DE LA GRILLE
-	after := time.Now()
+// before := time.Now()
+// // fmt.Println("Nombre de solutions : ", resolution(&grille, &possibilite, true))	// CALCUL DU NB DE SOLUTIONS
+// // resolution(&grille, &possibilite, false)		// RESOLUTION DE LA GRILLE
+// after := time.Now()
 
-	afficher_temps(after.Sub(before))
+// afficher_temps(after.Sub(before))
 
-	print_grille(&grille, false)
-	
-	// fmt.Print(grille_to_string(&grille))
+// print_grille(&grille, false)
 
-}
+// // fmt.Print(grille_to_string(&grille))
 
-// github pour faire du sdl en go veandco go sdl 2
+// }
+
 // demander pour le "go run UTILS.GO MAIN.GO"
-// et l'histoire des packages

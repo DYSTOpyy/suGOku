@@ -4,10 +4,10 @@ import (
 	"math"
 )
 
-func Is_In (value int, slice []int) bool {
+func Is_In(value int, slice []int) bool {
 
 	for _, v := range slice {
-		if (value == v) {
+		if value == v {
 			return true
 		}
 	}
