@@ -63,20 +63,26 @@ func SaveFile(grid [TAILLE+2][TAILLE+1]int, mask [TAILLE][TAILLE]bool) error {
 	return nil
 }
 
-func ImportFile() (*[TAILLE+2][TAILLE+1]int, error){
+func ImportFile() (*[TAILLE+2][TAILLE+1]int, *[TAILLE][TAILLE]bool, error){
+	var ImportPath string
 	PackagePath := GetPackagePath()
-	ImportPath := filepath.Join(PackagePath,"files/import.txt")
+	ImportPath = filepath.Join(PackagePath,"files/save.txt")
 	buffer,err := os.ReadFile(ImportPath)
-	nbChar := len(buffer)
-	fmt.Println(nbChar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	root := int(math.Sqrt(float64(nbChar))) 
-	if root * root != nbChar {
-		return nil, errors.New("SizeError")
+	nbChar := len(buffer)
+	var root int
+	var isSave bool
+	if  root = int(math.Sqrt(float64(nbChar))) ; root * root == nbChar {
+		isSave = false
+		Size = root
+	} else if root = int(math.Sqrt(float64((nbChar-1)/2))) ; root * root * 2 + 1 == nbChar{
+		Size = root
+		isSave = true
+	} else {
+		return nil, nil, errors.New("SizeError")
 	}
-	Size = root
 	grille := [TAILLE + 2][TAILLE + 1]int{}
 	for i := 0; i < Size; i++ {
 		for j := 0; j < Size; j++ {
@@ -84,14 +90,29 @@ func ImportFile() (*[TAILLE+2][TAILLE+1]int, error){
 			if char == "." {
 				char = "0"
 			}
-			
 			Case, err := strconv.ParseInt(char,17,0)
 			if err != nil {
-				return nil, errors.New("ConversionError")
+				return nil, nil,errors.New("ConversionError")
 			}
 			grille[i][j] = int(Case)
 		}
 	}
+	mask := [TAILLE ][TAILLE ]bool{}
+	if isSave {
+		for i := 0; i < Size; i++ {
+			for j := 0; j < Size; j++ {
+				char := string(buffer[(Size * Size + 1) + i * Size + j])
+				if char == "0" {
+					mask[i][j] = false
+				} else {
+					mask[i][j] = true
+				}
+			}
+		}
+	} else {
+		mask = Generer_masque(&grille)
+	}
 	Maj_compteurs(&grille)
-	return &grille,nil
+	return &grille,&mask,nil
 }
+

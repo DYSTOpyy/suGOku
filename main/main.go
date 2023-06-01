@@ -169,18 +169,23 @@ func main() {
 	// afficher_temps(after.Sub(before))
 
 	// utils.Print_grille(&grille, false)
-	grille, _ , masque := init_grille(utils.Grille_sudoku_exemple())
-	utils.SaveFile(grille,masque)
+	grille, mask, err := utils.ImportFile()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		utils.Print_grille(grille,false)
+		utils.Print_digTable(mask)
+	} 
 	before := time.Now()
 	NewGrille := algo.GeneratorFull(algo.Easy)
 	after := time.Now()
 	utils.Print_grille(NewGrille,false)
 	afficher_temps(after.Sub(before))
-	// fmt.Println(grille_to_string(NewGrille))
-	
-	possibilite2 := utils.Generer_possibilite(NewGrille)
-	fmt.Println(resolution(NewGrille, &possibilite2, false))
-	utils.Print_grille(NewGrille,false)
+	utils.SaveFile(*NewGrille,utils.Generer_masque(NewGrille))
+
+	// possibilite2 := utils.Generer_possibilite(NewGrille)
+	// fmt.Println(resolution(NewGrille, &possibilite2, false))
+	// utils.Print_grille(NewGrille,false)
 	// GrilleGen, possibilite2 , _ := init_grille(NewGrille)
 	// fmt.Println("GRILLE DE DEPART : ")
 	// utils.Print_grille(&GrilleGen, false)
