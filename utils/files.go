@@ -2,16 +2,15 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"os"
 	"path/filepath"
 	"strconv"
 )
 
-// Permet de revenir
+// Renvoie le chemin absolu du dossier racine du projet
 func GetPackagePath() string {
-	Path,_ := filepath.Abs("test/dir/test2")
+	Path,_ := filepath.Abs("")
 	for filepath.Base(Path) != "Sudoku" {
 		Path,_ = filepath.Split(Path)
 		Path = filepath.Clean(Path)
@@ -19,8 +18,11 @@ func GetPackagePath() string {
 	return Path
 }
 
-
-func SaveFile(grid [TAILLE+2][TAILLE+1]int, mask [TAILLE][TAILLE]bool) error {
+// Enregistre une grille dans un fichier save.txt, présent dans le dossier files, sous la forme de 2 blocs de chiffres :
+// le premier pour la grille
+// et le second pour le masque
+// Ce programme peut renvoyer une erreur de type PathError ou une erreur d'écriture
+func SaveFile(grid *[TAILLE+2][TAILLE+1]int, mask [TAILLE][TAILLE]bool) error {
 	PackagePath := GetPackagePath()
 	FilePath := filepath.Join(PackagePath,"files/save.txt")
 	file, err := os.Create(FilePath)
@@ -47,11 +49,9 @@ func SaveFile(grid [TAILLE+2][TAILLE+1]int, mask [TAILLE][TAILLE]bool) error {
 	}
 	for i := 0; i < Size; i++ {
 		for j := 0; j < Size; j++ {
-			char := fmt.Sprint(mask[i][j])
-			if char == "true" {
+			char := "0"
+			if mask[i][j] {
 				char = "1"
-			} else {
-				char = "0"
 			}
 			_, err2 := file.WriteString(char)
 			if err2 != nil {
@@ -63,6 +63,9 @@ func SaveFile(grid [TAILLE+2][TAILLE+1]int, mask [TAILLE][TAILLE]bool) error {
 	return nil
 }
 
+// Permet d'importer un sudoku totalemant neuf, ou de charger une sauvegarde
+// Le programme renvoie la grille, le masque associé ainsi qu'une erreur
+// Peut renvoyer une erreur d'ouverture, de taille ou de conversion
 func ImportFile() (*[TAILLE+2][TAILLE+1]int, *[TAILLE][TAILLE]bool, error){
 	var ImportPath string
 	PackagePath := GetPackagePath()
@@ -92,12 +95,12 @@ func ImportFile() (*[TAILLE+2][TAILLE+1]int, *[TAILLE][TAILLE]bool, error){
 			}
 			Case, err := strconv.ParseInt(char,17,0)
 			if err != nil {
-				return nil, nil,errors.New("ConversionError")
+				return nil, nil,err
 			}
 			grille[i][j] = int(Case)
 		}
 	}
-	mask := [TAILLE ][TAILLE ]bool{}
+	mask := [TAILLE][TAILLE]bool{}
 	if isSave {
 		for i := 0; i < Size; i++ {
 			for j := 0; j < Size; j++ {

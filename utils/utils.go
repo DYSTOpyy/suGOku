@@ -12,6 +12,8 @@ var Size = 9
 
 const TAILLE int  = 16
 
+
+// Verifie si la case (x,y) de la grille en paramètre peut acceuillir la valeur value, et renvoie un boolean
 func IsOkayCase(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	line := IsOkayLine(x,y,grid,value)	
 	column := IsOkayColumn(x,y,grid,value)	
@@ -19,6 +21,7 @@ func IsOkayCase(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	return line && column && box
 }
 
+// Verifie si la case (x,y) de la grille en paramètre peut acceuillir la valeur value sur la ligne, et renvoie un boolean
 func IsOkayLine(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	i:=0
 	for i < Size && grid[x][i] != value {
@@ -27,6 +30,7 @@ func IsOkayLine(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	return i == Size
 }
 
+// Verifie si la case (x,y) de la grille en paramètre peut acceuillir la valeur value sur la colonne, et renvoie un boolean
 func IsOkayColumn(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	i:=0
 	for i < Size && grid[i][y] != value {
@@ -35,6 +39,7 @@ func IsOkayColumn(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	return i == Size
 }
 
+// Verifie si la case (x,y) de la grille en paramètre peut acceuillir la valeur value sur la boite, et renvoie un boolean
 func IsOkayBox(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 	root := int(math.Sqrt(float64(Size)))
 	i:=0
@@ -42,17 +47,6 @@ func IsOkayBox(x int, y int, grid [TAILLE+2][TAILLE+1]int, value int) bool {
 		i++
 	}
 	return i == Size
-}
-
-func Is_In (value int, slice []int) bool {
-
-	for _, v := range slice {
-		if (value == v) {
-			return true
-		}
-	}
-	return false
-
 }
 
 // maj_compteurs met à jour les compteurs du nombre d'indices par ligne/colonne/bloc
@@ -83,10 +77,9 @@ func Maj_compteurs(grille *[TAILLE + 2][TAILLE + 1]int) {
 }
 
 // print_grille permet d'afficher une grille de sudoku ainsi que ses compteurs.
-// Si string_output=true, alors la grille n'est pas affichée mais renvoyée en string.
 //
 // La grille en argument doit être sous forme de pointeur.
-func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,string_output bool) string {
+func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int) {
 
 	text := ""
 	for line := 0; line < Size; line++ {
@@ -143,15 +136,12 @@ func Print_grille(grille *[TAILLE + 2][TAILLE + 1]int,string_output bool) string
 
 	text += "Nombre d'indices total :" + strconv.Itoa(grille[Size][Size])
 
-	if string_output {
-		return text
-	} else {
-		fmt.Println(text)
-		return ""
-	}
+	fmt.Println(text)
+	
 }
 
-func Print_digTable(grille *[TAILLE][TAILLE]bool) string {
+// Permet d'afficher de façon propre les tableaux de booléans
+func Print_boolTable(grille *[TAILLE][TAILLE]bool) {
 
 	text := ""
 	for line := 0; line < Size; line++ {
@@ -181,10 +171,10 @@ func Print_digTable(grille *[TAILLE][TAILLE]bool) string {
 		text = text + "\n"
 	}
 	fmt.Println(text)
-	return ""
 }
 
-func Sum_DigTable(grille *[TAILLE][TAILLE]bool) int {
+// Permet de renvoyer la nombre de fois où une case est marqué vraie dans un tableau
+func Sum_BoolTable(grille *[TAILLE][TAILLE]bool) int {
 	count := 0
 	for i := 0; i < Size; i++ {
 		for j := 0; j < Size; j++ {
@@ -248,6 +238,8 @@ func Generer_masque(grille *[TAILLE + 2][TAILLE + 1]int) [TAILLE][TAILLE]bool {
 	return masque
 }
 
+
+// Permet d'ordonner une slice de façon aléatoire 
 func ListRandomize(liste []int) []int {
 	length := len(liste)
 	nb_change := rand.Int()%int(length/2)+int(length/2)
@@ -259,8 +251,46 @@ func ListRandomize(liste []int) []int {
 	return liste
 }
 
+
+// Permet de convertir l'indice d'une case en son numéro de ligne et celui de colonne 
 func IndexToLinCol(index int) (int,int) {
 	line, column := int(index/Size), index%Size
 	return line , column
 }
 
+
+// Renvoie une grille avec les erreurs présente sur le plateau, sous la forme d'un tableau de boolean qui prends pour valeur true si la case contient une erreur, false sinon
+func FindErrors(grid *[TAILLE+2][TAILLE+1]int, mask *[TAILLE][TAILLE]bool) ([TAILLE][TAILLE]bool){
+	errors := [TAILLE][TAILLE]bool{}
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++{
+			if !mask[i][j] && grid[i][j] != 0{
+				errors[i][j] = !IsOkayCase(i, j, *grid,grid[i][j])
+			} 
+		}
+	}
+	return errors
+}
+
+// init_grille génère une grille puis détermine ses compteurs et ses possibilité.
+// C'est une fonction à retour multiple, qui renvoie la grille et les possibilités.
+// 
+// La grille en argument doit être sous forme de pointeur.		DOIT DISPARAITRE POUR LAISSER PLACE A UN ARGUMENT "DIFFICULTE"
+func Init_grille(grille *[TAILLE + 2][TAILLE + 1]int) ([TAILLE + 2][TAILLE + 1]int,[TAILLE][TAILLE][]int, [TAILLE][TAILLE]bool) {
+	// générer la grille
+	// mettre à jour ses compteurs
+	Maj_compteurs(grille)
+	// générer la grille de possibilité
+	// renvoyer les deux
+	return *grille, Generer_possibilite(grille), Generer_masque(grille)
+}
+
+func RestartGrille(grid *[TAILLE+2][TAILLE+1]int, mask *[TAILLE][TAILLE]bool) {
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++{
+			if !mask[i][j] {
+				grid[i][j] = 0
+			} 
+		}
+	}
+}
