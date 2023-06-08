@@ -2,8 +2,6 @@ package main
 
 import (
 	"math"
-	"os"
-	"runtime/pprof"
 	"strconv"
 	"time"
 
@@ -151,7 +149,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 	coordBoutonResoudre := [4]int32{int32(size+1) * taille_case, 3*taille_case + 150 + coordBoutonVerifier[3] + coordBoutonMenu[3] + coordBoutonRecommencer[3], int32(float64(imgResoudre.W)), int32(float64(imgResoudre.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de la police des textes
-	font, err = ttf.OpenFont("assets/ARIAL.TTF", int(taille_case/2))
+	font, err = ttf.OpenFont("assets/Acme-Regular.ttf", int(taille_case/2))
 	if err != nil {
 		panic(err)
 	}
@@ -386,7 +384,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 					} else if utils.EmptyBoolArray(&verifier) {
 						messageGame = "Aucune erreur pour l'instant, continuez !"
 					} else {
-						messageGame = "Une ou plusieurs incohérence trouvées."
+						messageGame = "Une ou plusieurs incohérences trouvées."
 					}
 
 				}
@@ -411,9 +409,13 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 
 				// clic sur resoudre : resoud la grille et fini la partie
 				if (coordBoutonResoudre[0]+coordBoutonResoudre[2] >= x && x >= coordBoutonResoudre[0]) && (coordBoutonResoudre[1]+coordBoutonResoudre[3] >= y && y >= coordBoutonResoudre[1]) {
-					algo.Algo_backtracking(grille, &possibilite, algo.GenSlice(grille))
-					resoudre = true
-					messageGame = "Résolution de la grille terminée."
+					if algo.Algo_backtracking(grille, &possibilite, algo.GenSlice(grille)) {
+						resoudre = true
+						messageGame = "Résolution de la grille terminée."
+					} else {
+						messageGame = "Pas de solution possible."
+					}
+
 				}
 
 			}
@@ -523,7 +525,7 @@ func menu() {
 	messageGame = ""
 
 	// init de la police des textes
-	font, err := ttf.OpenFont("assets/ARIAL.TTF", int(17))
+	font, err := ttf.OpenFont("assets/Acme-Regular.ttf", int(17))
 	if err != nil {
 		panic(err)
 	}
@@ -708,9 +710,13 @@ func menu() {
 				if (100+continuerImg.W >= x && x >= 100) && (500+continuerImg.H >= y && y >= 500) {
 
 					grille, masque, err = utils.ImportFile()
+
 					if err != nil {
+
 						messageMenu = "Erreur avec la sauvegarde/le txt. Vérifiez le fichier file/save.txt"
 					} else {
+						possibilite = utils.Generer_possibilite(&grille)
+						verifier = utils.FindErrors(&grille, &masque)
 						startTime = time.Now()
 						screen = Game
 					}
@@ -730,7 +736,7 @@ func loading() {
 	renderer.SetDrawColor(0, 0, 0, 255)
 
 	// init de la police des textes
-	font, err := ttf.OpenFont("assets/ARIAL.TTF", int(taille_case/2))
+	font, err := ttf.OpenFont("assets/Acme-Regular.ttf", int(taille_case/2))
 	if err != nil {
 		panic(err)
 	}
@@ -785,19 +791,6 @@ func loading() {
 }
 
 func main() {
-	// Ouvrir un fichier pour enregistrer le profil CPU
-	f, err := os.Create("cpu_profile.prof")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	// Démarrer le profilage CPU
-	err = pprof.StartCPUProfile(f)
-	if err != nil {
-		panic(err)
-	}
-	defer pprof.StopCPUProfile()
 
 	start()
 
