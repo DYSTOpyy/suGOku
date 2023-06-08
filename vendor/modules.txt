@@ -1,0 +1,6 @@
+# github.com/mattn/go-isatty v0.0.18
+## explicit; go 1.15
+# golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
+## explicit; go 1.20
+# golang.org/x/sys v0.6.0
+## explicit; go 1.17

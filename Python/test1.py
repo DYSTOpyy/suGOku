@@ -1,35 +1,29 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
-INPUT1 = ".5.4283..7.....9....3....2.6....1.5.3..6.2..1.8.7....3.3....6....9.....5..1863.9."
-SIZE = 3
+import subprocess
+SIZE = 4
 SIZE2 = SIZE**2
 SIZE4 = SIZE2**2
 
-def affichage():
-    input1=INPUT1
-    string=""
-    for i in range(9):
-        for j in range(9):
-            string+=input1[j]
-            if j%3==2 and j != 8:
+def affichage(tab : np.ndarray):
+    string = ""
+    for i in range(SIZE2):
+        for j in range(SIZE2):
+            value = str(tab[i][j])
+            if value == "0":
+                value = " "
+            string+=value
+            if j%SIZE == SIZE-1 and j != SIZE2-1:
                 string+="|"
-        input1=input1[9:]
         string+="\n"
-        if i%3==2and i != 8:
-                string+=11*"-"+"\n"
+        if i%SIZE == SIZE-1 and i != SIZE2-1:
+                string+=(SIZE2+SIZE-1)*"-"+"\n"
     print(string)
 
-affichage()
 
-def toTab():
-    tab = np.zeros((SIZE2+2,SIZE2+1),int)
-    for i in range(SIZE4):
-        char=INPUT1[i]
-        if char =='.':
-            char = "0"
-        tab[i//9,i%9]= char
-    return tab
 
-def valLig(tab):   
+def valLig(tab : np.ndarray):   
     for i in range (SIZE2):
         somme=0
         for j in range (SIZE2):
@@ -37,7 +31,7 @@ def valLig(tab):
                 somme+=1
         tab[i,SIZE2]=somme
 
-def valCol(tab):
+def valCol(tab : np.ndarray):
     for i in range(SIZE2):
         somme=0
         for j in range (SIZE2):
@@ -45,7 +39,7 @@ def valCol(tab):
                 somme+=1
         tab[SIZE2,i]=somme
 
-def valSquare(tab):
+def valSquare(tab : np.ndarray):
     for s in range(SIZE2):
         somme=0
         lig=s%SIZE*SIZE
@@ -70,12 +64,27 @@ def valSquare(tab):
 #     return somme
 
 def init():
-    tab=toTab()
+    tab = importSudoku()
     for i in range(SIZE2):
-        valLig(tab)
-        valCol(tab)
-        valSquare(tab)
-    print(tab)
+        valLig(tab) # type: ignore
+        valCol(tab) # type: ignore
+        valSquare(tab) # type: ignore
+    affichage(tab)  # type: ignore
+
+def importSudoku() :
+    subprocess.run(["go","run","main.go","-size","16"])
+    try : 
+        data = open("output.txt", "r")
+    except FileNotFoundError :
+        return FileNotFoundError
+    input=data.read().split('\n')[0]
+    tab = np.zeros((SIZE2+2,SIZE2+1),int)
+    for i in range(SIZE4):
+        char=input[i]
+        if char =='.':
+            char = "0"
+        tab[i//SIZE2,i%SIZE2]= char
+    return tab
 
 
 init()
