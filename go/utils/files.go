@@ -22,16 +22,16 @@ func GetPackagePath() string {
 // le premier pour la grille
 // et le second pour le masque
 // Ce programme peut renvoyer une erreur de type PathError ou une erreur d'écriture
-func SaveFile(grid *[TAILLE + 2][TAILLE + 1]int, mask [TAILLE][TAILLE]bool) error {
+func SaveFile(grille *[MAX + 2][MAX + 1]int, mask [MAX][MAX]bool) error {
 	PackagePath := GetPackagePath()
 	FilePath := filepath.Join(PackagePath, "files/save.txt")
 	file, err := os.Create(FilePath)
 	if err != nil {
 		return err
 	}
-	for i := 0; i < Size; i++ {
-		for j := 0; j < Size; j++ {
-			char := strconv.FormatInt(int64(grid[i][j]), 17)
+	for i := int32(0); i < Taille; i++ {
+		for j := int32(0); j < Taille; j++ {
+			char := strconv.FormatInt(int64(grille[i][j]), 17)
 			if char == "0" {
 				char = "."
 			}
@@ -47,8 +47,8 @@ func SaveFile(grid *[TAILLE + 2][TAILLE + 1]int, mask [TAILLE][TAILLE]bool) erro
 		file.Close()
 		return err2
 	}
-	for i := 0; i < Size; i++ {
-		for j := 0; j < Size; j++ {
+	for i := int32(0); i < Taille; i++ {
+		for j := int32(0); j < Taille; j++ {
 			char := "0"
 			if mask[i][j] {
 				char = "1"
@@ -66,32 +66,32 @@ func SaveFile(grid *[TAILLE + 2][TAILLE + 1]int, mask [TAILLE][TAILLE]bool) erro
 // Permet d'importer un sudoku totalemant neuf, ou de charger une sauvegarde
 // Le programme renvoie la grille, le masque associé ainsi qu'une erreur
 // Peut renvoyer une erreur d'ouverture, de taille ou de conversion
-func ImportFile() ([TAILLE + 2][TAILLE + 1]int, [TAILLE][TAILLE]bool, error) {
+func ImportFile() ([MAX + 2][MAX + 1]int, [MAX][MAX]bool, error) {
 	var ImportPath string
 	PackagePath := GetPackagePath()
 	ImportPath = filepath.Join(PackagePath, "files/save.txt")
-	grille := [TAILLE + 2][TAILLE + 1]int{}
-	mask := [TAILLE][TAILLE]bool{}
+	grille := [MAX + 2][MAX + 1]int{}
+	mask := [MAX][MAX]bool{}
 	buffer, err := os.ReadFile(ImportPath)
 	if err != nil {
 		return grille, mask, err
 	}
-	nbChar := len(buffer)
-	var root int
+	var nbChar int32 = int32(len(buffer))
+	var root int32
 	var isSave bool
-	if root = int(math.Sqrt(float64(nbChar))); root*root == nbChar {
+	if root = int32(math.Sqrt(float64(nbChar))); root*root == nbChar {
 		isSave = false
-		Size = root
-	} else if root = int(math.Sqrt(float64((nbChar - 1) / 2))); root*root*2+1 == nbChar {
-		Size = root
+		Taille = root
+	} else if root = int32(math.Sqrt(float64((nbChar - 1) / 2))); root*root*2+1 == nbChar {
+		Taille = root
 		isSave = true
 	} else {
-		return grille, mask, errors.New("SizeError")
+		return grille, mask, errors.New("TailleError")
 	}
 
-	for i := 0; i < Size; i++ {
-		for j := 0; j < Size; j++ {
-			char := string(buffer[i*Size+j])
+	for i := int32(0); i < Taille; i++ {
+		for j := int32(0); j < Taille; j++ {
+			char := string(buffer[i*Taille+j])
 			if char == "." {
 				char = "0"
 			}
@@ -104,9 +104,9 @@ func ImportFile() ([TAILLE + 2][TAILLE + 1]int, [TAILLE][TAILLE]bool, error) {
 	}
 
 	if isSave {
-		for i := 0; i < Size; i++ {
-			for j := 0; j < Size; j++ {
-				char := string(buffer[(Size*Size+1)+i*Size+j])
+		for i := int32(0); i < Taille; i++ {
+			for j := int32(0); j < Taille; j++ {
+				char := string(buffer[(Taille*Taille+1)+i*Taille+j])
 				if char == "0" {
 					mask[i][j] = false
 				} else {

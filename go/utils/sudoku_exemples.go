@@ -4,11 +4,11 @@ import "fmt"
 
 // Grille_sudoku_exemple renvoi des grilles de test sudoku.
 // Deux grilles disponible selon la size en paramètre : 9x9 ou 16x16
-func Grille_sudoku_exemple () *[TAILLE + 2][TAILLE + 1]int {
+func Grille_sudoku_exemple () *[MAX + 2][MAX + 1]int {
 
-	void_return := [TAILLE + 2][TAILLE + 1]int{}
+	void_return := [MAX + 2][MAX + 1]int{}
 
-	Grille9 :=[TAILLE + 2][TAILLE + 1]int{
+	Grille9 :=[MAX + 2][MAX + 1]int{
 	                                  //Remplissage de vide à droite
 		{0, 0, 0, 0, 4, 0, 0, 1, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0},
 		{0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0},
@@ -30,7 +30,7 @@ func Grille_sudoku_exemple () *[TAILLE + 2][TAILLE + 1]int {
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
-	Grille16 := [TAILLE + 2][TAILLE + 1]int{
+	Grille16 := [MAX + 2][MAX + 1]int{
 		{0, 15, 0, 1, 0, 2, 10, 14, 12, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 6, 3, 16, 12, 0, 8, 4, 14, 15, 1, 0, 2, 0, 0, 0, 0},
 		{14, 0, 9, 7, 11, 3, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -50,10 +50,10 @@ func Grille_sudoku_exemple () *[TAILLE + 2][TAILLE + 1]int {
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
-	if Size == 9 {
+	if Taille == 9 {
 		return &Grille9
 	} else 
-	if Size == 16{
+	if Taille == 16{
 		return &Grille16
 	} else {
 		fmt.Println("ERREUR DE VALEUR : GRILLE VIDE RETOURNÉE")

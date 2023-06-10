@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	TAILLE = utils.TAILLE // Taille MAX de la MATRICE de sudoku
-	Game   = iota
+	MAX  = utils.MAX // Taille MAX de la MATRICE de sudoku
+	Game = iota
 	Menu
 	Loading
 )
@@ -24,7 +24,7 @@ var (
 	windowVertical   int32  = 600
 	windowHorizontal int32  = 800
 	titre            string = "Sudoku!"
-	size             int    = utils.Size // ordre du sudoku en jeu (9x9, 16x16)
+	size             int32  = utils.Taille // ordre du sudoku en jeu (9x9, 16x16)
 
 	renderer    *sdl.Renderer
 	window      *sdl.Window
@@ -34,10 +34,10 @@ var (
 	hooverButtonGame [4]bool // état des boutons en jeu (souris dessus ou non)
 	hooverButtonMenu [5]bool // état des boutons en menue
 
-	masque      [TAILLE][TAILLE]bool        // garde en mémoire les cases ajoutées par le joueur ou présentes depuis le début
-	verifier    [TAILLE][TAILLE]bool        // indique si des cases sont incorrectes ou non
-	grille      [TAILLE + 2][TAILLE + 1]int // grille de jeu 16x16 avec 2 lignes de compteurs de cases et 1 colonne de compteur de cases
-	possibilite [TAILLE][TAILLE][]int       // répertorie pour chaque case les valeurs possibles
+	masque      [MAX][MAX]bool        // garde en mémoire les cases ajoutées par le joueur ou présentes depuis le début
+	verifier    [MAX][MAX]bool        // indique si des cases sont incorrectes ou non
+	grille      [MAX + 2][MAX + 1]int // grille de jeu 16x16 avec 2 lignes de compteurs de cases et 1 colonne de compteur de cases
+	possibilite [MAX][MAX][]int       // répertorie pour chaque case les valeurs possibles
 
 	taille_case int32 // taille d'un carré de sudoku
 
@@ -82,7 +82,7 @@ func start() {
 }
 
 // Change la valeur d'une case si elle n'est pas un indice
-func changeCase(valeur int, grille *[TAILLE + 2][TAILLE + 1]int, masque [TAILLE][TAILLE]bool) {
+func changeCase(valeur int, grille *[MAX + 2][MAX + 1]int, masque [MAX][MAX]bool) {
 	if !masque[selected_y][selected_x] {
 		grille[selected_y][selected_x] = valeur
 	}
@@ -97,7 +97,7 @@ func destroy() {
 }
 
 // Écran de jeu du sudoku
-func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
+func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 
 	// init la transparence
 	if err := renderer.SetDrawBlendMode(sdl.BLENDMODE_BLEND); err != nil {
@@ -113,7 +113,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonVerifier := [4]int32{int32(size+1) * taille_case, 3 * taille_case, int32(float64(imgVerifier.W)), int32(float64(imgVerifier.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonVerifier := [4]int32{size + 1*taille_case, 3 * taille_case, int32(float64(imgVerifier.W)), int32(float64(imgVerifier.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Menu
 	imgMenu, err := img.Load("assets/Button Menu.png")
@@ -124,7 +124,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonMenu := [4]int32{int32(size+1) * taille_case, 3*taille_case + 50 + coordBoutonVerifier[3], int32(float64(imgMenu.W)), int32(float64(imgMenu.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonMenu := [4]int32{size + 1*taille_case, 3*taille_case + 50 + coordBoutonVerifier[3], int32(float64(imgMenu.W)), int32(float64(imgMenu.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Recommencer
 	imgRecommencer, err := img.Load("assets/Button Recommencer.png")
@@ -135,7 +135,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonRecommencer := [4]int32{int32(size+1) * taille_case, 3*taille_case + 100 + coordBoutonVerifier[3] + coordBoutonMenu[3], int32(float64(imgRecommencer.W)), int32(float64(imgRecommencer.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonRecommencer := [4]int32{size+1 * taille_case, 3*taille_case + 100 + coordBoutonVerifier[3] + coordBoutonMenu[3], int32(float64(imgRecommencer.W)), int32(float64(imgRecommencer.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Resoudre
 	imgResoudre, err := img.Load("assets/Button Resoudre.png")
@@ -146,7 +146,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonResoudre := [4]int32{int32(size+1) * taille_case, 3*taille_case + 150 + coordBoutonVerifier[3] + coordBoutonMenu[3] + coordBoutonRecommencer[3], int32(float64(imgResoudre.W)), int32(float64(imgResoudre.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonResoudre := [4]int32{+1 * taille_case, 3*taille_case + 150 + coordBoutonVerifier[3] + coordBoutonMenu[3] + coordBoutonRecommencer[3], int32(float64(imgResoudre.W)), int32(float64(imgResoudre.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de la police des textes
 	font, err = ttf.OpenFont("assets/Acme-Regular.ttf", int(taille_case/2))
@@ -215,34 +215,34 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 
 	// dessin des rectangles des cases
 	renderer.SetDrawColor(0, 0, 0, 255)
-	for X := 0; X < size; X++ {
-		for Y := 0; Y < size; Y++ {
+	for X := int32(0); X < size; X++ {
+		for Y := int32(0); Y < size; Y++ {
 
 			// dessin des cases incorrectes après avoir cliqué sur Vérifier
 			if verifier[Y][X] {
 				renderer.SetDrawColor(255, 0, 0, 120)
-				rect = sdl.Rect{X: int32(X) * taille_case, Y: int32(Y) * taille_case, W: taille_case, H: taille_case}
+				rect = sdl.Rect{X: X * taille_case, Y: Y * taille_case, W: taille_case, H: taille_case}
 				renderer.FillRect(&rect)
 				renderer.SetDrawColor(0, 0, 0, 255)
 			}
 
 			if masque[Y][X] {
 				renderer.SetDrawColor(0, 0, 0, 50)
-				rect = sdl.Rect{X: int32(X) * taille_case, Y: int32(Y) * taille_case, W: taille_case, H: taille_case}
+				rect = sdl.Rect{X: X * taille_case, Y: Y * taille_case, W: taille_case, H: taille_case}
 				renderer.FillRect(&rect)
 				renderer.SetDrawColor(0, 0, 0, 255)
 			}
 
-			rect = sdl.Rect{X: int32(X) * taille_case, Y: int32(Y) * taille_case, W: taille_case, H: taille_case}
+			rect = sdl.Rect{X: X * taille_case, Y: Y * taille_case, W: taille_case, H: taille_case}
 			renderer.DrawRect(&rect)
 		}
 	}
 
 	// dessiner les lignes verticales/horizontales
 	renderer.SetDrawColor(0, 0, 255, 255)
-	for i := 1; i <= 2; i++ {
-		renderer.FillRect(&sdl.Rect{X: taille_case*int32(i)*int32(math.Sqrt(float64(size))) - 1, Y: 0, W: 3, H: taille_case * int32(size)})
-		renderer.FillRect(&sdl.Rect{X: 0, Y: taille_case*int32(i)*int32(math.Sqrt(float64(size))) - 1, W: taille_case * int32(size), H: 3})
+	for i := int32(1); i <= 2; i++ {
+		renderer.FillRect(&sdl.Rect{X: taille_case * i * int32(math.Sqrt(float64(size))) - 1, Y: 0, W: 3, H: taille_case * size})
+		renderer.FillRect(&sdl.Rect{X: 0, Y: taille_case * i * int32(math.Sqrt(float64(size))) - 1, W: taille_case * size, H: 3})
 	}
 
 	// encadrement d'une case sélectionnée
@@ -257,8 +257,8 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 
 	// écriture des chiffres dans le sudoku
 	renderer.SetDrawColor(0, 0, 0, 255)
-	for X := 0; X < size; X++ {
-		for Y := 0; Y < size; Y++ {
+	for X := int32(0); X < size; X++ {
+		for Y := int32(0); Y < size; Y++ {
 
 			if grille[X][Y] != 0 {
 
@@ -282,7 +282,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 					panic(err)
 				}
 
-				renderer.Copy(fontTexture, nil, &sdl.Rect{X: int32(Y)*taille_case + (taille_case-w)/2, Y: int32(X)*taille_case + (taille_case-h)/2, W: w, H: h})
+				renderer.Copy(fontTexture, nil, &sdl.Rect{X: Y*taille_case + (taille_case-w)/2, Y: X*taille_case + (taille_case-h)/2, W: w, H: h}) // Y: X ?
 				fontTexture.Destroy()
 			}
 
@@ -308,7 +308,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 
 	// affichage du timer si le jeu est pas résolu
 	if !resoudre {
-		renderer.Copy(fontTexture, nil, &sdl.Rect{X: int32(size+1) * taille_case, Y: taille_case, W: w, H: h})
+		renderer.Copy(fontTexture, nil, &sdl.Rect{X: size+1 * taille_case, Y: taille_case, W: w, H: h})
 	}
 	fontTexture.Destroy()
 
@@ -329,7 +329,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 			panic(err)
 		}
 
-		renderer.Copy(fontTexture, nil, &sdl.Rect{X: 20, Y: int32(size+2) * taille_case, W: w, H: h})
+		renderer.Copy(fontTexture, nil, &sdl.Rect{X: 20, Y: size+2 * taille_case, W: w, H: h})
 		fontTexture.Destroy()
 	}
 	renderer.Present()
@@ -377,7 +377,7 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 
 				// clic sur vérifier : vérification des erreurs
 				if (coordBoutonVerifier[0]+coordBoutonVerifier[2] >= x && x >= coordBoutonVerifier[0]) && (coordBoutonVerifier[1]+coordBoutonVerifier[3] >= y && y >= coordBoutonVerifier[1]) {
-					verifier = utils.FindErrors(grille, &masque)
+					verifier = utils.TrouverErreurs(grille, &masque)
 					if utils.EmptyBoolArray(&verifier) && utils.FullIntArray(grille) {
 						messageGame = "BRAVO ! Vous avez gagné !"
 						resoudre = true
@@ -404,12 +404,12 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 				// clic sur recommencer : vide toutes les entrées utilisateur
 				if (coordBoutonRecommencer[0]+coordBoutonRecommencer[2] >= x && x >= coordBoutonRecommencer[0]) && (coordBoutonRecommencer[1]+coordBoutonRecommencer[3] >= y && y >= coordBoutonRecommencer[1]) && !resoudre {
 					utils.RestartGrille(grille, &masque)
-					verifier = utils.FindErrors(grille, &masque)
+					verifier = utils.TrouverErreurs(grille, &masque)
 				}
 
 				// clic sur resoudre : resoud la grille et fini la partie
 				if (coordBoutonResoudre[0]+coordBoutonResoudre[2] >= x && x >= coordBoutonResoudre[0]) && (coordBoutonResoudre[1]+coordBoutonResoudre[3] >= y && y >= coordBoutonResoudre[1]) {
-					if algo.Algo_backtracking(grille, &possibilite, algo.GenSlice(grille)) {
+					if algo.Algo_backtracking(grille, &possibilite, algo.Generer_Slice(grille)) {
 						resoudre = true
 						messageGame = "Résolution de la grille terminée."
 					} else {
@@ -496,8 +496,8 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 			}
 			if keys[sdl.SCANCODE_RIGHT] == 1 {
 				selected_x += 1
-				if selected_x >= int32(size) {
-					selected_x = int32(size) - 1
+				if selected_x >= size {
+					selected_x = size - 1
 				}
 			}
 			if keys[sdl.SCANCODE_UP] == 1 {
@@ -508,8 +508,8 @@ func interface_jeu(grille *[TAILLE + 2][TAILLE + 1]int) {
 			}
 			if keys[sdl.SCANCODE_DOWN] == 1 {
 				selected_y += 1
-				if selected_y >= int32(size) {
-					selected_y = int32(size) - 1
+				if selected_y >= size {
+					selected_y = size - 1
 				}
 			}
 
@@ -716,7 +716,7 @@ func menu() {
 						messageMenu = "Erreur avec la sauvegarde/le txt. Vérifiez le fichier file/save.txt"
 					} else {
 						possibilite = utils.Generer_possibilite(&grille)
-						verifier = utils.FindErrors(&grille, &masque)
+						verifier = utils.TrouverErreurs(&grille, &masque)
 						startTime = time.Now()
 						screen = Game
 					}

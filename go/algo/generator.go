@@ -16,41 +16,41 @@ const (
 	Evil   Difficulty = 4
 )
 
-const TAILLE int = utils.TAILLE
+const MAX int32 = utils.MAX
 
 // Retourne la fonction de Digging, le nombre de cases données et le minimum par ligne
-func EditDifficulty(diff Difficulty) (func(*[TAILLE][TAILLE]bool, int, int) (int, int), int, int) {
+func EditDifficulty(diff Difficulty) (func(*[MAX][MAX]bool, int32, int32) (int32, int32), int32, int) {
 	var (
-		nb_case  int
-		min_line int
-		algoDig  func(*[TAILLE][TAILLE]bool, int, int) (int, int)
+		nb_case  int32
+		min_ligne int
+		algoDig  func(*[MAX][MAX]bool, int32, int32) (int32, int32)
 	)
 	switch diff {
 	case Easy:
-		nb_case = rand.Int()%14 + 36
-		min_line = 4
+		nb_case = rand.Int31()%14 + 36
+		min_ligne = 4
 		algoDig = RandomDig
 	case Medium:
-		nb_case = rand.Int()%3 + 32
-		min_line = 3
+		nb_case = rand.Int31()%3 + 32
+		min_ligne = 3
 		algoDig = JumpingDig
 	case Hard:
-		nb_case = rand.Int()%3 + 28
-		min_line = 2
+		nb_case = rand.Int31()%3 + 28
+		min_ligne = 2
 		algoDig = WanderingDig
 	case Evil:
-		nb_case = rand.Int()%5 + 22
-		min_line = 0
+		nb_case = rand.Int31()%5 + 22
+		min_ligne = 0
 		algoDig = TopBottomDig
 	}
-	return algoDig, nb_case, min_line
+	return algoDig, nb_case, min_ligne
 }
 
 // Géneration complète d'une grille en fonction d'un paramètre de difficulté
-func GeneratorTotal(diff Difficulty) *[TAILLE + 2][TAILLE + 1]int {
-	grille := [TAILLE + 2][TAILLE + 1]int{}
+func GeneratorTotal(diff Difficulty) *[MAX + 2][MAX + 1]int {
+	grille := [MAX + 2][MAX + 1]int{}
 	GenGridFull(&grille)
-	liste := GenSlice(&grille)
+	liste := Generer_Slice(&grille)
 	possibilite := utils.Generer_possibilite(&grille)
 	Algo_backtracking(&grille, &possibilite, liste)
 	utils.Maj_compteurs(&grille)
@@ -62,7 +62,7 @@ func GeneratorTotal(diff Difficulty) *[TAILLE + 2][TAILLE + 1]int {
 // C'est une fonction à retour multiple, qui renvoie la grille et les possibilités.
 //
 // La grille en argument doit être sous forme de pointeur.		DOIT DISPARAITRE POUR LAISSER PLACE A UN ARGUMENT "DIFFICULTE"
-func Init_grille(difficulteChoisie Difficulty) ([TAILLE + 2][TAILLE + 1]int, [TAILLE][TAILLE][]int, [TAILLE][TAILLE]bool, [TAILLE][TAILLE]bool) {
+func Init_grille(difficulteChoisie Difficulty) ([MAX + 2][MAX + 1]int, [MAX][MAX][]int, [MAX][MAX]bool, [MAX][MAX]bool) {
 	// générer la grille
 	grille := GeneratorTotal(difficulteChoisie)
 	// mettre à jour ses compteurs
@@ -72,19 +72,19 @@ func Init_grille(difficulteChoisie Difficulty) ([TAILLE + 2][TAILLE + 1]int, [TA
 	// generer le masque de la grille
 	masque := utils.Generer_masque(grille)
 	// generer la grille des cases vérifiées
-	verifier := [TAILLE][TAILLE]bool{}
+	verifier := [MAX][MAX]bool{}
 	// renvoyer les deux
 	return *grille, possibilite, masque, verifier
 }
 
 // Permet de créer une liste d'entier allant de 0 à la taille de la grille au carré, en enlevant les indices des cases déja occupées
-func GenSlice(grille *[TAILLE + 2][TAILLE + 1]int) []int {
-	size := utils.Size
-	liste := []int{}
-	for line := 0; line < size; line++ {
-		for column := 0; column < size; column++ {
-			if grille[line][column] == 0 {
-				liste = append(liste, size*line+column)
+func Generer_Slice(grille *[MAX + 2][MAX + 1]int) []int32 {
+	size := utils.Taille
+	liste := []int32{}
+	for ligne := int32(0); ligne < size; ligne++ {
+		for colonne := int32(0) ; colonne < size; colonne++ {
+			if grille[ligne][colonne] == 0 {
+				liste = append(liste, size * ligne + colonne)
 			}
 		}
 	}
@@ -92,14 +92,14 @@ func GenSlice(grille *[TAILLE + 2][TAILLE + 1]int) []int {
 }
 
 // Initialise la grille en remplissant les carrés présent sur la diagonale de la grille avec des valeurs aléatoires
-func GenGridFull(grille *[TAILLE + 2][TAILLE + 1]int) {
-	size := utils.Size
+func GenGridFull(grille *[MAX + 2][MAX + 1]int) {
+	size := utils.Taille
 	possibilite := utils.Generer_possibilite(grille)
-	liste := []int{}
-	root := int(math.Sqrt(float64(size)))
-	for i := 0; i < size; i++ {
-		for j := 0; j < size; j = j + root {
-			liste = append(liste, i%root+int(i/root)*size+j*(size)+j)
+	liste := []int32{}
+	racine := int32(math.Sqrt(float64(size)))
+	for i := int32(0); i < size; i++ {
+		for j := int32(0); j < size; j = j + racine {
+			liste = append(liste, i % racine + int32(i/racine) * size + j * (size+1))
 		}
 	}
 	liste = utils.ListRandomize(liste)
@@ -107,15 +107,16 @@ func GenGridFull(grille *[TAILLE + 2][TAILLE + 1]int) {
 }
 
 // Algorythme Top-Down qui permet de vider une grille en fonction de la difficulté choisie
-func DiggingHoles(grille *[TAILLE + 2][TAILLE + 1]int, diff Difficulty) {
-	AlgoDig, nb_case, min_line := EditDifficulty(diff)
+func DiggingHoles(grille *[MAX + 2][MAX + 1]int, diff Difficulty) {
+	AlgoDig, nb_case, min_ligne := EditDifficulty(diff)
 	digTable := FillDiggable()
-	nbRemovedCase := 1
-	linToDig, colToDig := rand.Int()%utils.Size, rand.Int()%utils.Size
+	var nbRemovedCase int32 = 1
+	taille := utils.Taille
+	linToDig, colToDig := rand.Int31()%taille, rand.Int31()%taille
 	Dig(grille, digTable, linToDig, colToDig)
-	for nbRemovedCase < utils.Size*utils.Size-nb_case && ContinueDigging(digTable) {
+	for nbRemovedCase < taille * taille - nb_case && ContinueDigging(digTable) {
 		newLinToDig, newColToDig := AlgoDig(digTable, linToDig, colToDig)
-		if grille[newLinToDig][utils.Size]-1 < min_line || grille[utils.Size][newColToDig]-1 < min_line {
+		if grille[newLinToDig][taille]-1 < min_ligne || grille[taille][newColToDig]-1 < min_ligne {
 			digTable[newLinToDig][newColToDig] = false
 			continue
 		}
@@ -132,10 +133,10 @@ func DiggingHoles(grille *[TAILLE + 2][TAILLE + 1]int, diff Difficulty) {
 }
 
 // Permet d'initaliser la DigTable avec true dans toutes ses cases
-func FillDiggable() *[TAILLE][TAILLE]bool {
-	digTable := &[TAILLE][TAILLE]bool{}
-	for i := 0; i < utils.Size; i++ {
-		for j := 0; j < utils.Size; j++ {
+func FillDiggable() *[MAX][MAX]bool {
+	digTable := &[MAX][MAX]bool{}
+	for i := int32(0); i < utils.Taille; i++ {
+		for j := int32(0); j < utils.Taille; j++ {
 			digTable[i][j] = true
 		}
 	}
@@ -143,18 +144,19 @@ func FillDiggable() *[TAILLE][TAILLE]bool {
 }
 
 // Renvoie l'indice de ligne et de la colonne à miner, determiner par hasard
-func RandomDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
-	linNew := rand.Int() % utils.Size
-	colNew := rand.Int() % utils.Size
+func RandomDig(digTable *[MAX][MAX]bool, linPrev int32, colPrev int32) (int32, int32) {
+	taille := utils.Taille
+	linNew := rand.Int31() % taille
+	colNew := rand.Int31() % taille
 	for !digTable[linNew][colNew] {
-		linNew = rand.Int() % utils.Size
-		colNew = rand.Int() % utils.Size
+		linNew = rand.Int31() % taille
+		colNew = rand.Int31() % taille
 	}
 	return linNew, colNew
 }
 
 // Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Jumping One
-func JumpingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+func JumpingDig(digTable *[MAX][MAX]bool, linPrev int32, colPrev int32) (int32, int32) {
 	linNew, colNew := linPrev, colPrev
 	ToLeft := linNew % 2
 	for !digTable[linNew][colNew] {
@@ -163,17 +165,17 @@ func JumpingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, 
 			if colNew < 0 {
 				colNew += 1 + 2*((colNew+3)%2)
 				linNew += 1
-				if linNew >= utils.Size {
+				if linNew >= utils.Taille {
 					linNew = 0
 					colNew = 0 + (colNew % 2)
 				}
 			}
 		} else {
 			colNew += 2
-			if colNew >= utils.Size {
+			if colNew >= utils.Taille {
 				colNew -= 1 + 2*((colNew+1)%2)
 				linNew += 1
-				if linNew >= utils.Size {
+				if linNew >= utils.Taille {
 					linNew = 0
 					colNew = 0 + (colNew % 2)
 				}
@@ -185,7 +187,7 @@ func JumpingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, 
 }
 
 // Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Wandering along S
-func WanderingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+func WanderingDig(digTable *[MAX][MAX]bool, linPrev int32, colPrev int32) (int32, int32) {
 	linNew, colNew := linPrev, colPrev
 	ToLeft := linNew % 2
 	for !digTable[linNew][colNew] {
@@ -197,12 +199,12 @@ func WanderingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int
 			}
 		} else {
 			colNew += 1
-			if colNew >= utils.Size {
-				colNew = utils.Size - 1
+			if colNew >= utils.Taille {
+				colNew = utils.Taille - 1
 				linNew += 1
 			}
 		}
-		if linNew >= utils.Size {
+		if linNew >= utils.Taille {
 			linNew = 0
 			colNew = 0
 		}
@@ -212,14 +214,14 @@ func WanderingDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int
 }
 
 // Renvoie l'indice de ligne et de la colonne à miner, determiner par l'algorythme Left to Right then Top to Bottom
-func TopBottomDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int, int) {
+func TopBottomDig(digTable *[MAX][MAX]bool, linPrev int32, colPrev int32) (int32, int32) {
 	linNew, colNew := linPrev, colPrev
 	for !digTable[linNew][colNew] {
 		colNew += 1
-		if colNew >= utils.Size {
-			colNew -= utils.Size
+		if colNew >= utils.Taille {
+			colNew -= utils.Taille
 			linNew += 1
-			if linNew >= utils.Size {
+			if linNew >= utils.Taille {
 				linNew = 0
 			}
 		}
@@ -228,18 +230,18 @@ func TopBottomDig(digTable *[TAILLE][TAILLE]bool, linPrev int, colPrev int) (int
 }
 
 // Verifie l'unicité d'une solution et renvoie true si la solution est unique, false sinon
-func IsSolutionUnique(grille [TAILLE + 2][TAILLE + 1]int, linToDig int, colToDig int) bool {
+func IsSolutionUnique(grille [MAX + 2][MAX + 1]int, linToDig int32, colToDig int32) bool {
 	listValue := []int{}
-	for i := 1; i < utils.Size+1; i++ {
+	for i := 1; i < int(utils.Taille + 1); i++ {
 		if i != grille[linToDig][colToDig] {
 			listValue = append(listValue, i)
 		}
 	}
 	for _, value := range listValue {
-		if utils.IsOkayCase(linToDig, colToDig, grille, value) {
+		if utils.CaseBonne(linToDig, colToDig, grille, value) {
 			grille[linToDig][colToDig] = value
 			possibilite := utils.Generer_possibilite(&grille)
-			slice := GenSlice(&grille)
+			slice := Generer_Slice(&grille)
 			if Algo_backtracking(&grille, &possibilite, slice) {
 				return false
 			}
@@ -249,16 +251,16 @@ func IsSolutionUnique(grille [TAILLE + 2][TAILLE + 1]int, linToDig int, colToDig
 }
 
 // Permet de miner la case indiqué, en mettant à jour la grille et la DigTable
-func Dig(grille *[TAILLE + 2][TAILLE + 1]int, digTable *[TAILLE][TAILLE]bool, linToDig int, colToDig int) {
+func Dig(grille *[MAX + 2][MAX + 1]int, digTable *[MAX][MAX]bool, linToDig int32, colToDig int32) {
 	digTable[linToDig][colToDig] = false
 	grille[linToDig][colToDig] = 0
 	utils.Maj_compteurs(grille)
 }
 
 // Fonction qui renvoie un boolean indiquant si il reste encore des cases à miner dans notre grille
-func ContinueDigging(digTable *[TAILLE][TAILLE]bool) bool {
-	for i := 0; i < utils.Size; i++ {
-		for j := 0; j < utils.Size; j++ {
+func ContinueDigging(digTable *[MAX][MAX]bool) bool {
+	for i := int32(0); i < utils.Taille; i++ {
+		for j := int32(0); j < utils.Taille; j++ {
 			if digTable[i][j] {
 				return true
 			}
