@@ -1,6 +1,10 @@
-# github.com/mattn/go-isatty v0.0.18
+# github.com/veandco/go-sdl2 v0.4.35
 ## explicit; go 1.15
-# golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
+github.com/veandco/go-sdl2/_libs
+github.com/veandco/go-sdl2/img
+github.com/veandco/go-sdl2/sdl
+github.com/veandco/go-sdl2/ttf
+# golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 ## explicit; go 1.20
-# golang.org/x/sys v0.6.0
-## explicit; go 1.17
+golang.org/x/exp/constraints
+golang.org/x/exp/slices
