@@ -23,13 +23,12 @@ func GetPackagePath() string {
 // et le second pour le masque
 // Ce programme peut renvoyer une erreur de type PathError ou une erreur d'écriture
 func SaveFile(grille *[MAX + 2][MAX + 1]int, mask [MAX][MAX]bool) error {
-	PackagePath := GetPackagePath()
-	FilePath := filepath.Join(PackagePath, "files/save.txt")
-	file, err := os.Create(FilePath)
+
+	file, err := os.Create("files/save.txt")
 	if err != nil {
-		os.Chdir(PackagePath)
-		os.Mkdir("files",0666)
-		file, err = os.Create(FilePath)
+		// os.Chdir(PackagePath)
+		// os.Mkdir("files",0666)
+		// file, err = os.Create(FilePath)
 		if err != nil {
 			return err
 		}
@@ -72,12 +71,9 @@ func SaveFile(grille *[MAX + 2][MAX + 1]int, mask [MAX][MAX]bool) error {
 // Le programme renvoie la grille, le masque associé ainsi qu'une erreur
 // Peut renvoyer une erreur d'ouverture, de taille ou de conversion
 func ImportFile() ([MAX + 2][MAX + 1]int, [MAX][MAX]bool, error) {
-	var ImportPath string
-	PackagePath := GetPackagePath()
-	ImportPath = filepath.Join(PackagePath, "files/save.txt")
 	grille := [MAX + 2][MAX + 1]int{}
 	mask := [MAX][MAX]bool{}
-	buffer, err := os.ReadFile(ImportPath)
+	buffer, err := os.ReadFile( "files/save.txt")
 	if err != nil {
 		return grille, mask, err
 	}
