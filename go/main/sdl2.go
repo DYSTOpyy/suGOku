@@ -113,7 +113,7 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonVerifier := [4]int32{size + 1*taille_case, 3 * taille_case, int32(float64(imgVerifier.W)), int32(float64(imgVerifier.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonVerifier := [4]int32{(size + 1) * taille_case, 3 * taille_case, int32(float64(imgVerifier.W)), int32(float64(imgVerifier.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Menu
 	imgMenu, err := img.Load("assets/Button Menu.png")
@@ -124,7 +124,7 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonMenu := [4]int32{size + 1*taille_case, 3*taille_case + 50 + coordBoutonVerifier[3], int32(float64(imgMenu.W)), int32(float64(imgMenu.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonMenu := [4]int32{(size + 1) * taille_case, 3*taille_case + 50 + coordBoutonVerifier[3], int32(float64(imgMenu.W)), int32(float64(imgMenu.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Recommencer
 	imgRecommencer, err := img.Load("assets/Button Recommencer.png")
@@ -135,7 +135,7 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonRecommencer := [4]int32{size+1 * taille_case, 3*taille_case + 100 + coordBoutonVerifier[3] + coordBoutonMenu[3], int32(float64(imgRecommencer.W)), int32(float64(imgRecommencer.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonRecommencer := [4]int32{(size + 1) * taille_case, 3*taille_case + 100 + coordBoutonVerifier[3] + coordBoutonMenu[3], int32(float64(imgRecommencer.W)), int32(float64(imgRecommencer.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Resoudre
 	imgResoudre, err := img.Load("assets/Button Resoudre.png")
@@ -241,8 +241,8 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	// dessiner les lignes verticales/horizontales
 	renderer.SetDrawColor(0, 0, 255, 255)
 	for i := int32(1); i <= 2; i++ {
-		renderer.FillRect(&sdl.Rect{X: taille_case * i * int32(math.Sqrt(float64(size))) - 1, Y: 0, W: 3, H: taille_case * size})
-		renderer.FillRect(&sdl.Rect{X: 0, Y: taille_case * i * int32(math.Sqrt(float64(size))) - 1, W: taille_case * size, H: 3})
+		renderer.FillRect(&sdl.Rect{X: taille_case*i*int32(math.Sqrt(float64(size))) - 1, Y: 0, W: 3, H: taille_case * size})
+		renderer.FillRect(&sdl.Rect{X: 0, Y: taille_case*i*int32(math.Sqrt(float64(size))) - 1, W: taille_case * size, H: 3})
 	}
 
 	// encadrement d'une case sélectionnée
@@ -308,7 +308,7 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 
 	// affichage du timer si le jeu est pas résolu
 	if !resoudre {
-		renderer.Copy(fontTexture, nil, &sdl.Rect{X: size+1 * taille_case, Y: taille_case, W: w, H: h})
+		renderer.Copy(fontTexture, nil, &sdl.Rect{X: (size + 1) * taille_case, Y: taille_case, W: w, H: h})
 	}
 	fontTexture.Destroy()
 
@@ -329,7 +329,7 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 			panic(err)
 		}
 
-		renderer.Copy(fontTexture, nil, &sdl.Rect{X: 20, Y: size+2 * taille_case, W: w, H: h})
+		renderer.Copy(fontTexture, nil, &sdl.Rect{X: 20, Y: (size + 2) * taille_case, W: w, H: h})
 		fontTexture.Destroy()
 	}
 	renderer.Present()
