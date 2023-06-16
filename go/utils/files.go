@@ -27,7 +27,12 @@ func SaveFile(grille *[MAX + 2][MAX + 1]int, mask [MAX][MAX]bool) error {
 	FilePath := filepath.Join(PackagePath, "files/save.txt")
 	file, err := os.Create(FilePath)
 	if err != nil {
-		return err
+		os.Chdir(PackagePath)
+		os.Mkdir("files",0666)
+		file, err = os.Create(FilePath)
+		if err != nil {
+			return err
+		}
 	}
 	for i := int32(0); i < Taille; i++ {
 		for j := int32(0); j < Taille; j++ {
