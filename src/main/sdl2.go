@@ -32,7 +32,7 @@ var (
 	fontSurface *sdl.Surface
 
 	hooverButtonGame [4]bool // état des boutons en jeu (souris dessus ou non)
-	hooverButtonMenu [5]bool // état des boutons en menue
+	hooverButtonMenu [6]bool // état des boutons en menue
 
 	masque      [MAX][MAX]bool        // garde en mémoire les cases ajoutées par le joueur ou présentes depuis le début
 	verifier    [MAX][MAX]bool        // indique si des cases sont incorrectes ou non
@@ -409,13 +409,27 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 
 				// clic sur resoudre : resoud la grille et fini la partie
 				if (coordBoutonResoudre[0]+coordBoutonResoudre[2] >= x && x >= coordBoutonResoudre[0]) && (coordBoutonResoudre[1]+coordBoutonResoudre[3] >= y && y >= coordBoutonResoudre[1]) {
-					if algo.Algo_backtracking(grille, &possibilite, algo.Generer_Slice(grille)) {
-						resoudre = true
-						messageGame = "Résolution de la grille terminée."
+					if difficulte != 0 {
+						if algo.Algo_backtracking(grille, &possibilite, algo.Generer_Slice(grille)) {
+							resoudre = true
+							messageGame = "Résolution de la grille terminée."
+						} else {
+							messageGame = "Pas de solution possible."
+						}
 					} else {
-						messageGame = "Pas de solution possible."
-					}
+						verifier = utils.TrouverErreurs(grille, &masque)
+						if utils.EmptyBoolArray(&verifier) {
+							if algo.Algo_backtracking(grille, &possibilite, algo.Generer_Slice(grille)) {
+								resoudre = true
+								messageGame = "Résolution de la grille terminée."
 
+							} else {
+								messageGame = "Pas de solution possible."
+							}
+						} else {
+							messageGame = "Pas de solution possible : grille invalide."
+						}
+					}
 				}
 
 			}
@@ -586,6 +600,16 @@ func menu() {
 	}
 	defer continuerImg.Free()
 
+	// init de l'image bouton Resoudre
+	resoudreImg, err := img.Load("assets/Resoudre.png")
+	if hooverButtonMenu[5] {
+		resoudreImg, err = img.Load("assets/Resoudre Hoover.png")
+	}
+	defer resoudreImg.Free()
+	if err != nil {
+		panic(err)
+	}
+
 	// affichage du bouton Facile
 	bouton, err := renderer.CreateTextureFromSurface(facileImg)
 	if err != nil {
@@ -624,6 +648,14 @@ func menu() {
 		panic(err)
 	}
 	renderer.Copy(bouton, nil, &sdl.Rect{X: 100, Y: 500, W: int32(float64(continuerImg.W)), H: int32(float64(continuerImg.H))})
+	bouton.Destroy()
+
+	// affichage du bouton Resoudre
+	bouton, err = renderer.CreateTextureFromSurface(resoudreImg)
+	if err != nil {
+		panic(err)
+	}
+	renderer.Copy(bouton, nil, &sdl.Rect{X: 500, Y: 100, W: int32(float64(resoudreImg.W)), H: int32(float64(resoudreImg.H))})
 	bouton.Destroy()
 
 	if messageMenu != "" {
@@ -669,6 +701,7 @@ func menu() {
 			hooverButtonMenu[2] = (100+difficileImg.W >= x && x >= 100) && (300+difficileImg.H >= y && y >= 300)
 			hooverButtonMenu[3] = (100+diaboliqueImg.W >= x && x >= 100) && (400+diaboliqueImg.H >= y && y >= 400)
 			hooverButtonMenu[4] = (100+continuerImg.W >= x && x >= 100) && (500+continuerImg.H >= y && y >= 500)
+			hooverButtonMenu[5] = (500+resoudreImg.W >= x && x >= 500) && (100+resoudreImg.H >= y && y >= 100)
 
 		// clic de la souris
 		case *sdl.MouseButtonEvent:
@@ -722,6 +755,13 @@ func menu() {
 					}
 
 				}
+
+				// clic sur resoudre : génération d'une grille vide dans laquelle le joueur peut entrer et résoudre une grille
+				if (500+resoudreImg.W >= x && x >= 500) && (100+resoudreImg.H >= y && y >= 100) {
+
+					difficulte = 0
+					screen = Loading
+				}
 			}
 		}
 	}
@@ -744,6 +784,8 @@ func loading() {
 
 	// init de la surface des textes
 	switch difficulte {
+	case 0:
+		fontSurface, err = font.RenderUTF8Blended("Chargement de la grille vide...", sdl.Color{R: 0, G: 0, B: 0, A: 255})
 	case 1:
 		fontSurface, err = font.RenderUTF8Blended("Chargement de la grille Facile...", sdl.Color{R: 0, G: 0, B: 0, A: 255})
 	case 2:
@@ -774,6 +816,12 @@ func loading() {
 	renderer.Present()
 
 	switch difficulte {
+
+	case 0:
+		grille = [MAX + 2][MAX + 1]int{}
+		masque = [MAX][MAX]bool{}
+		possibilite = utils.Generer_possibilite(&grille)
+		verifier = utils.TrouverErreurs(&grille, &masque)
 	case 1:
 		grille, possibilite, masque, verifier = algo.Init_grille(1)
 	case 2:
