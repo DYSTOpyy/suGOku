@@ -105,9 +105,9 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	}
 
 	// init de l'image bouton Vérifier
-	imgVerifier, err := img.Load("src/main/assets/Button 9.png")
+	imgVerifier, err := img.Load("assets/Button 9.png")
 	if hooverButtonGame[0] {
-		imgVerifier, err = img.Load("src/main/assets/Button 9 Hoover.png")
+		imgVerifier, err = img.Load("assets/Button 9 Hoover.png")
 	}
 	defer imgVerifier.Free()
 	if err != nil {
@@ -116,9 +116,9 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	coordBoutonVerifier := [4]int32{(size + 1) * taille_case, 3 * taille_case, int32(float64(imgVerifier.W)), int32(float64(imgVerifier.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Menu
-	imgMenu, err := img.Load("src/main/assets/Button Menu.png")
+	imgMenu, err := img.Load("assets/Button Menu.png")
 	if hooverButtonGame[1] {
-		imgMenu, err = img.Load("src/main/assets/Button Menu Hoover.png")
+		imgMenu, err = img.Load("assets/Button Menu Hoover.png")
 	}
 	defer imgMenu.Free()
 	if err != nil {
@@ -127,9 +127,9 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	coordBoutonMenu := [4]int32{(size + 1) * taille_case, 3*taille_case + 50 + coordBoutonVerifier[3], int32(float64(imgMenu.W)), int32(float64(imgMenu.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Recommencer
-	imgRecommencer, err := img.Load("src/main/assets/Button Recommencer.png")
+	imgRecommencer, err := img.Load("assets/Button Recommencer.png")
 	if hooverButtonGame[2] {
-		imgRecommencer, err = img.Load("src/main/assets/Button Recommencer Hoover.png")
+		imgRecommencer, err = img.Load("assets/Button Recommencer Hoover.png")
 	}
 	defer imgRecommencer.Free()
 	if err != nil {
@@ -138,18 +138,18 @@ func interface_jeu(grille *[MAX + 2][MAX + 1]int) {
 	coordBoutonRecommencer := [4]int32{(size + 1) * taille_case, 3*taille_case + 100 + coordBoutonVerifier[3] + coordBoutonMenu[3], int32(float64(imgRecommencer.W)), int32(float64(imgRecommencer.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de l'image bouton Resoudre
-	imgResoudre, err := img.Load("src/main/assets/Button Resoudre.png")
+	imgResoudre, err := img.Load("assets/Button Resoudre.png")
 	if hooverButtonGame[3] {
-		imgResoudre, err = img.Load("src/main/assets/Button Resoudre Hoover.png")
+		imgResoudre, err = img.Load("assets/Button Resoudre Hoover.png")
 	}
 	defer imgResoudre.Free()
 	if err != nil {
 		panic(err)
 	}
-	coordBoutonResoudre := [4]int32{(size+1) * taille_case, 3*taille_case + 150 + coordBoutonVerifier[3] + coordBoutonMenu[3] + coordBoutonRecommencer[3], int32(float64(imgResoudre.W)), int32(float64(imgResoudre.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
+	coordBoutonResoudre := [4]int32{(size + 1) * taille_case, 3*taille_case + 150 + coordBoutonVerifier[3] + coordBoutonMenu[3] + coordBoutonRecommencer[3], int32(float64(imgResoudre.W)), int32(float64(imgResoudre.H))} // coin haut gauche x, y, windowVertical, windowHorizontal
 
 	// init de la police des textes
-	font, err = ttf.OpenFont("src/main/assets/Acme-Regular.ttf", int(taille_case/2))
+	font, err = ttf.OpenFont("assets/Acme-Regular.ttf", int(taille_case/2))
 	if err != nil {
 		panic(err)
 	}
@@ -525,7 +525,7 @@ func menu() {
 	messageGame = ""
 
 	// init de la police des textes
-	font, err := ttf.OpenFont("src/main/assets/Acme-Regular.ttf", int(17))
+	font, err := ttf.OpenFont("assets/Acme-Regular.ttf", int(17))
 	if err != nil {
 		panic(err)
 	}
@@ -537,9 +537,9 @@ func menu() {
 	}
 
 	// init de l'image bouton Facile
-	facileImg, err := img.Load("src/main/assets/Facile.png")
+	facileImg, err := img.Load("assets/Facile.png")
 	if hooverButtonMenu[0] {
-		facileImg, err = img.Load("src/main/assets/Facile Hoover.png")
+		facileImg, err = img.Load("assets/Facile Hoover.png")
 	}
 	defer facileImg.Free()
 	if err != nil {
@@ -547,9 +547,9 @@ func menu() {
 	}
 
 	// init de l'image bouton Moyen
-	moyenImg, err := img.Load("src/main/assets/Moyen.png")
+	moyenImg, err := img.Load("assets/Moyen.png")
 	if hooverButtonMenu[1] {
-		moyenImg, err = img.Load("src/main/assets/Moyen Hoover.png")
+		moyenImg, err = img.Load("assets/Moyen Hoover.png")
 	}
 	defer moyenImg.Free()
 	if err != nil {
@@ -557,9 +557,9 @@ func menu() {
 	}
 
 	// init de l'image bouton Difficile
-	difficileImg, err := img.Load("src/main/assets/Difficile.png")
+	difficileImg, err := img.Load("assets/Difficile.png")
 	if hooverButtonMenu[2] {
-		difficileImg, err = img.Load("src/main/assets/Difficile Hoover.png")
+		difficileImg, err = img.Load("assets/Difficile Hoover.png")
 	}
 	if err != nil {
 		panic(err)
@@ -567,9 +567,9 @@ func menu() {
 	defer difficileImg.Free()
 
 	// init de l'image bouton Diabolique
-	diaboliqueImg, err := img.Load("src/main/assets/Diabolique.png")
+	diaboliqueImg, err := img.Load("assets/Diabolique.png")
 	if hooverButtonMenu[3] {
-		diaboliqueImg, err = img.Load("src/main/assets/Diabolique Hoover.png")
+		diaboliqueImg, err = img.Load("assets/Diabolique Hoover.png")
 	}
 	if err != nil {
 		panic(err)
@@ -577,9 +577,9 @@ func menu() {
 	defer diaboliqueImg.Free()
 
 	// init de l'image bouton Continuer
-	continuerImg, err := img.Load("src/main/assets/Continuer.png")
+	continuerImg, err := img.Load("assets/Continuer.png")
 	if hooverButtonMenu[4] {
-		continuerImg, err = img.Load("src/main/assets/Continuer Hoover.png")
+		continuerImg, err = img.Load("assets/Continuer Hoover.png")
 	}
 	if err != nil {
 		panic(err)
@@ -736,7 +736,7 @@ func loading() {
 	renderer.SetDrawColor(0, 0, 0, 255)
 
 	// init de la police des textes
-	font, err := ttf.OpenFont("src/main/assets/Acme-Regular.ttf", int(taille_case/2))
+	font, err := ttf.OpenFont("assets/Acme-Regular.ttf", int(taille_case/2))
 	if err != nil {
 		panic(err)
 	}
