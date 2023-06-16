@@ -26,12 +26,7 @@ func SaveFile(grille *[MAX + 2][MAX + 1]int, mask [MAX][MAX]bool) error {
 
 	file, err := os.Create("files/save.txt")
 	if err != nil {
-		// os.Chdir(PackagePath)
-		// os.Mkdir("files",0666)
-		// file, err = os.Create(FilePath)
-		if err != nil {
-			return err
-		}
+		return err
 	}
 	for i := int32(0); i < Taille; i++ {
 		for j := int32(0); j < Taille; j++ {
@@ -73,7 +68,7 @@ func SaveFile(grille *[MAX + 2][MAX + 1]int, mask [MAX][MAX]bool) error {
 func ImportFile() ([MAX + 2][MAX + 1]int, [MAX][MAX]bool, error) {
 	grille := [MAX + 2][MAX + 1]int{}
 	mask := [MAX][MAX]bool{}
-	buffer, err := os.ReadFile( "files/save.txt")
+	buffer, err := os.ReadFile("files/save.txt")
 	if err != nil {
 		return grille, mask, err
 	}
